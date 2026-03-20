@@ -95,6 +95,15 @@ $('btnSignIn').addEventListener('click', () => {
   window.location.href = `${BACKEND_URL}/auth/login`;
 });
 
+// ── Switch Channel ────────────────────────────────────────────
+// Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
+$('btnSwitchChannel').addEventListener('click', () => {
+  if (cachedChannels.length > 1) {
+    renderChannelPicker(cachedChannels);
+    showScreen('picker');
+  }
+});
+
 // ── Sign out — revoke token at Google ────────────────────────
 // Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
 $('btnSignOut').addEventListener('click', async () => {
@@ -110,7 +119,7 @@ $('btnSignOut').addEventListener('click', async () => {
   editedVideos = {};
   savedRows    = new Set();
   $('channelBadge').classList.add('hidden');
-  ['btnDownload', 'btnSaveAll', 'btnSignOut'].forEach(id => $(id).classList.add('hidden'));
+  ['btnDownload', 'btnSaveAll', 'btnSignOut', 'btnSwitchChannel'].forEach(id => $(id).classList.add('hidden'));
   showScreen('signIn');
   showToast('Disconnected. Token revoked at Google.', 'success');
 });
@@ -154,11 +163,14 @@ async function ytUpdate(videoId, snippet) {
 
 // ── Load channels ─────────────────────────────────────────────
 // Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
+let cachedChannels = [];
+
 async function loadChannels() {
   setLoading('Fetching your YouTube channels...');
   try {
     const data     = await ytFetch('/channels?part=snippet,contentDetails&mine=true&maxResults=50');
     const channels = data.items || [];
+    cachedChannels = channels;
     if (!channels.length) {
       showToast('No YouTube channels found for this account.', 'error');
       showScreen('signIn');
@@ -237,6 +249,10 @@ async function loadVideos(channel) {
     $('btnDownload').classList.remove('hidden');
     $('btnSaveAll').classList.remove('hidden');
     $('btnSignOut').classList.remove('hidden');
+    // Only show Switch Channel if user has more than one channel
+    if (cachedChannels.length > 1) {
+      $('btnSwitchChannel').classList.remove('hidden');
+    }
     showToast(`Loaded ${allVideos.length} videos`, 'success');
   } catch (e) {
     if (e.message !== 'Unauthorised') showToast(e.message, 'error');
