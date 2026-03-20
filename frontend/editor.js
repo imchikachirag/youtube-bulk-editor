@@ -646,7 +646,7 @@ $('btnSendFeedback').addEventListener('click', () => {
   const body    = encodeURIComponent(
     `Name: ${name}\nChannel: ${channel||'N/A'}\nType: ${type}\nRating: ${rating}\n\nFeedback:\n${message}`
   );
-  window.open(`mailto:jain.chirag+yt-editor@gmail.com?subject=${subject}&body=${body}`);
+  window.open(`mailto:jain.chirag+youtubebulkeditor@gmail.com?subject=${subject}&body=${body}`);
   showToast('Opening your email client...', 'success');
 });
 

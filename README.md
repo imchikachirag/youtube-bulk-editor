@@ -85,7 +85,7 @@ MIT License. Free to use, modify, and distribute. See [LICENSE](LICENSE).
 If this tool saved you time, please donate to any NGO of your choice. That is all the payment asked for.
 
 - Twitter: [@imchikachirag](https://twitter.com/imchikachirag)
-- Email: jain.chirag+yt-editor@gmail.com
+- Email: jain.chirag+youtubebulkeditor@gmail.com
 - Website: [chiragmehta.info](https://chiragmehta.info)
 
 ---
