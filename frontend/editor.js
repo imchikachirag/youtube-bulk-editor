@@ -17,7 +17,8 @@
 
 // ── Config ───────────────────────────────────────────────────
 // Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
-const BACKEND_URL = window.YT_EDITOR_CONFIG?.backendUrl || 'https://youtube-bulk-editor-api-REPLACE.run.app';
+// const BACKEND_URL = window.YT_EDITOR_CONFIG?.backendUrl || 'https://youtube-bulk-editor-api-REPLACE.run.app';
+const BACKEND_URL = window.YT_EDITOR_CONFIG?.backendUrl || 'https://youtube-bulk-editor-api-48045104741.asia-south1.run.app';
 const YT_BASE     = 'https://www.googleapis.com/youtube/v3';
 
 // ── DOM refs ─────────────────────────────────────────────────
