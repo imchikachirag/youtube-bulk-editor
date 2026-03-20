@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<!--
+  YouTube Bulk Editor — Privacy Policy
+  github.com/imchikachirag/youtube-bulk-editor
+
+  Copyright (c) 2026 Chirag Mehta
+  https://chiragmehta.info | @imchikachirag
+
+  MIT License
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — YouTube Bulk Editor by Chirag Mehta</title>
+  <meta name="description" content="Privacy policy for YouTube Bulk Editor. This tool stores nothing. Zero data retention. All processing happens in your browser.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://chiragmehta.info/youtube-bulk-editor/privacy">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f9f9f9; --surface: #ffffff; --border: #e0e0e0;
+      --text: #0f0f0f; --text2: #606060; --text3: #909090;
+      --accent: #065fd4; --green: #1a7f3c; --green-lt: #e6f4ea;
+      --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.7; font-size: 15px; }
+
+    .header {
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 16px 32px; display: flex; align-items: center; gap: 12px;
+    }
+    .logo { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 16px; color: var(--text); text-decoration: none; }
+    .logo-accent { color: #cc0000; }
+
+    .container { max-width: 760px; margin: 0 auto; padding: 48px 24px 80px; }
+
+    h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; letter-spacing: -.02em; }
+    .meta { color: var(--text3); font-size: 13px; margin-bottom: 40px; }
+
+    .privacy-highlight {
+      background: var(--green-lt); border: 1px solid #a8d5b5; border-radius: 8px;
+      padding: 16px 20px; margin-bottom: 36px; font-size: 14px; color: var(--green); line-height: 1.7;
+    }
+    .privacy-highlight strong { font-weight: 600; }
+
+    h2 { font-size: 18px; font-weight: 600; margin: 36px 0 10px; color: var(--text); }
+    p  { color: var(--text2); margin-bottom: 14px; }
+    ul { color: var(--text2); padding-left: 20px; margin-bottom: 14px; }
+    ul li { margin-bottom: 6px; }
+    a  { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code { background: #f2f2f2; border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; font-size: 13px; color: var(--text); }
+
+    .footer {
+      border-top: 1px solid var(--border); padding: 24px 32px;
+      text-align: center; font-size: 12px; color: var(--text3);
+      background: var(--surface);
+    }
+    .footer a { color: var(--accent); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <a class="logo" href="https://chiragmehta.info/youtube-bulk-editor">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="#cc0000"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>
+    YouTube <span class="logo-accent">Bulk</span> Editor
+  </a>
+</header>
+
+<div class="container">
+  <h1>Privacy Policy</h1>
+  <p class="meta">Last updated: March 2026 &nbsp;·&nbsp; Effective immediately &nbsp;·&nbsp; by <a href="https://chiragmehta.info">Chirag Mehta</a></p>
+
+  <div class="privacy-highlight">
+    <strong>The short version:</strong> YouTube Bulk Editor stores absolutely nothing about you. No database. No logs. No tracking. Your OAuth token lives only in your browser tab and is gone the moment you close it or click Disconnect. Your video data goes directly from your browser to YouTube — our server never sees it.
+  </div>
+
+  <h2>What data we collect</h2>
+  <p>None. YouTube Bulk Editor does not collect, store, transmit, or share any personal data, video data, usage data, or analytics of any kind.</p>
+
+  <h2>How authentication works</h2>
+  <p>This tool uses Google OAuth 2.0 to authenticate you with YouTube. Here is exactly what happens:</p>
+  <ul>
+    <li>You click "Sign in with Google" and are redirected to Google's own login page. We never see your password.</li>
+    <li>After you approve, Google sends a one-time code to our backend server (hosted on Google Cloud Run).</li>
+    <li>Our server exchanges this code for an OAuth access token and immediately redirects it to your browser via a URL fragment (<code>#token=...</code>). URL fragments are never sent to servers or written to server logs.</li>
+    <li>The token is stored in your browser's <code>sessionStorage</code> only. It is never written to any database, file, or external service.</li>
+    <li>When you close the tab or click Disconnect, the token is deleted from <code>sessionStorage</code> and revoked at Google immediately.</li>
+  </ul>
+
+  <h2>How your video data is handled</h2>
+  <p>All YouTube API calls — reading your video list, reading metadata, saving edits — go directly from your browser to the YouTube Data API v3. Our backend server is never involved in these requests. Your video titles, descriptions, and tags never pass through our server at any point.</p>
+
+  <h2>Our backend server</h2>
+  <p>Our backend is a small server hosted on Google Cloud Run (Mumbai, India). It handles exactly two things:</p>
+  <ul>
+    <li>Redirecting you to Google's OAuth login page</li>
+    <li>Exchanging the one-time OAuth code for a token and forwarding it to your browser</li>
+  </ul>
+  <p>The server has no database connection. It does not log requests. It does not store tokens. The complete source code is publicly readable at <a href="https://github.com/imchikachirag/youtube-bulk-editor/blob/main/backend/server.js" target="_blank">github.com/imchikachirag/youtube-bulk-editor</a>.</p>
+
+  <h2>Third parties</h2>
+  <p>No third-party analytics, advertising, tracking, or data-sharing SDKs are used. The only external services this tool communicates with are:</p>
+  <ul>
+    <li><strong>Google OAuth 2.0</strong> — for authentication</li>
+    <li><strong>YouTube Data API v3</strong> — for reading and updating your videos</li>
+    <li><strong>Google Cloud Run</strong> — hosts the OAuth backend</li>
+  </ul>
+  <p>All three are Google services subject to <a href="https://policies.google.com/privacy" target="_blank">Google's Privacy Policy</a>.</p>
+
+  <h2>Cookies</h2>
+  <p>This tool does not use cookies of any kind.</p>
+
+  <h2>Children's privacy</h2>
+  <p>This tool is intended for YouTube channel owners and managers. It is not directed at children under 13.</p>
+
+  <h2>Changes to this policy</h2>
+  <p>If this policy changes, the updated date at the top of this page will be updated. Since we collect no data, there is nothing substantive to change.</p>
+
+  <h2>Contact</h2>
+  <p>Questions about this privacy policy? Contact Chirag Mehta at <a href="mailto:jain.chirag+youtubebulkeditor@gmail.com">jain.chirag+youtubebulkeditor@gmail.com</a> or on Twitter at <a href="https://twitter.com/imchikachirag" target="_blank">@imchikachirag</a>.</p>
+
+</div>
+
+<footer class="footer">
+  <p>
+    <a href="https://chiragmehta.info/youtube-bulk-editor">YouTube Bulk Editor</a> &nbsp;·&nbsp;
+    <a href="https://github.com/imchikachirag/youtube-bulk-editor" target="_blank">Open Source on GitHub</a> &nbsp;·&nbsp;
+    <a href="https://chiragmehta.info" target="_blank">chiragmehta.info</a>
+  </p>
+  <p style="margin-top:8px">Copyright 2026 Chirag Mehta. Made with love in India.</p>
+</footer>
+
+</body>
+</html>
