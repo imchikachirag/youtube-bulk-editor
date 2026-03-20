@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<!--
+  YouTube Bulk Editor
+  github.com/imchikachirag/youtube-bulk-editor
+
+  Copyright (c) 2025 Chirag Mehta
+  https://chiragmehta.info | @imchikachirag
+
+  Free tool to bulk edit YouTube video titles, descriptions and tags.
+  MIT License — open source, free forever.
+  Donate to any NGO you love if this saved you time.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- ══ Primary SEO ══════════════════════════════════════════ -->
+  <!-- Copyright (c) 2025 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor -->
+  <title>YouTube Bulk Editor — Edit All Your Videos at Once | Free Tool by Chirag Mehta</title>
+  <meta name="description" content="Free tool to bulk edit YouTube video titles, descriptions and tags in one place. No more opening each video one by one. Sort, filter, paginate and save all changes at once. Built by Chirag Mehta. Open source.">
+  <meta name="keywords" content="youtube bulk editor, bulk edit youtube videos, youtube description editor, youtube title bulk edit, youtube tags editor, youtube metadata editor, edit multiple youtube videos, youtube video manager, free youtube tool, youtube studio alternative">
+  <meta name="author" content="Chirag Mehta">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://chiragmehta.info/youtube-bulk-editor">
+
+  <!-- ══ Open Graph (Facebook, LinkedIn, WhatsApp) ═══════════ -->
+  <!-- Copyright (c) 2025 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://chiragmehta.info/youtube-bulk-editor">
+  <meta property="og:title" content="YouTube Bulk Editor — Edit All Your Videos at Once">
+  <meta property="og:description" content="Free open source tool to bulk edit YouTube video titles, descriptions and tags. Sort, filter, paginate. Save all at once. Built by Chirag Mehta (@imchikachirag).">
+  <meta property="og:image" content="https://chiragmehta.info/youtube-bulk-editor/og-image.png">
+  <meta property="og:site_name" content="YouTube Bulk Editor by Chirag Mehta">
+  <meta property="og:locale" content="en_IN">
+
+  <!-- ══ Twitter Card ════════════════════════════════════════ -->
+  <!-- Copyright (c) 2025 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@imchikachirag">
+  <meta name="twitter:creator" content="@imchikachirag">
+  <meta name="twitter:title" content="YouTube Bulk Editor — Edit All Your Videos at Once">
+  <meta name="twitter:description" content="Free open source tool to bulk edit YouTube titles, descriptions and tags. No install needed. Built by @imchikachirag.">
+  <meta name="twitter:image" content="https://chiragmehta.info/youtube-bulk-editor/og-image.png">
+
+  <!-- ══ Structured Data (JSON-LD) ═══════════════════════════ -->
+  <!-- Copyright (c) 2025 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "YouTube Bulk Editor",
+    "url": "https://chiragmehta.info/youtube-bulk-editor",
+    "description": "Free tool to bulk edit YouTube video titles, descriptions and tags in one place.",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "author": {
+      "@type": "Person",
+      "name": "Chirag Mehta",
+      "url": "https://chiragmehta.info",
+      "sameAs": ["https://twitter.com/imchikachirag", "https://github.com/imchikachirag"]
+    }
+  }
+  </script>
+
+  <!-- ══ Favicon ═════════════════════════════════════════════ -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+  <style>
+    /* ══════════════════════════════════════════════════════════
+       YouTube Bulk Editor — Styles
+       Copyright (c) 2025 Chirag Mehta
+       github.com/imchikachirag/youtube-bulk-editor
+    ══════════════════════════════════════════════════════════ */
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #f9f9f9;
+      --surface:   #ffffff;
+      --surface2:  #f2f2f2;
+      --surface3:  #e8e8e8;
+      --border:    #e0e0e0;
+      --border2:   #d0d0d0;
+      --text:      #0f0f0f;
+      --text2:     #606060;
+      --text3:     #909090;
+      --accent:    #065fd4;
+      --accent-h:  #0456c0;
+      --accent-lt: #e8f0fd;
+      --red:       #cc0000;
+      --red-lt:    #fce8e8;
+      --green:     #1a7f3c;
+      --green-lt:  #e6f4ea;
+      --yellow:    #b06000;
+      --yellow-lt: #fef9e7;
+      --changed:   #fff8e1;
+      --saved:     #e6f4ea;
+      --radius:    6px;
+      --font:      'Segoe UI', 'Google Sans', system-ui, -apple-system, sans-serif;
+      --header-h:  56px;
+      --toolbar-h: 52px;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-size: 13px;
+    }
+
+    /* ══ HEADER ══════════════════════════════════════════════ */
+    /* Copyright (c) 2025 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor */
+    .header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      height: var(--header-h);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; background: var(--surface);
+      border-bottom: 1px solid var(--border); gap: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    }
+    .header-left, .header-right { display: flex; align-items: center; gap: 10px; }
+    .logo { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 16px; color: var(--text); text-decoration: none; }
+    .logo-accent { color: var(--red); }
+    .channel-badge {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 20px; padding: 4px 12px 4px 5px;
+      font-size: 12px; font-weight: 500; color: var(--text);
+    }
+    .channel-badge img { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
+    .badge-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+
+    /* ══ PRIVACY BANNER ══════════════════════════════════════ */
+    /* Copyright (c) 2025 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor */
+    .privacy-banner {
+      position: fixed; top: var(--header-h); left: 0; right: 0; z-index: 199;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      background: #e8f5e9; border-bottom: 1px solid #c8e6c9;
+      color: #2e7d32; font-size: 11.5px; padding: 5px 24px; flex-wrap: wrap;
+    }
+
+    /* ══ BUTTONS ═════════════════════════════════════════════ */
+    /* Copyright (c) 2025 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor */
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 14px; border-radius: var(--radius);
+      border: none; cursor: pointer;
+      font-size: 13px; font-family: var(--font); font-weight: 500;
+      transition: background 0.15s; white-space: nowrap;
+    }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-primary  { background: var(--accent); color: #fff; }
+    .btn-primary:hover:not(:disabled) { background: var(--accent-h); }
+    .btn-ghost    { background: transparent; color: var(--text2); border: 1px solid var(--border2); }
+    .btn-ghost:hover:not(:disabled) { background: var(--surface2); color: var(--text); }
+    .btn-danger   { background: transparent; color: var(--red); border: 1px solid #f5c6c6; }
+    .btn-danger:hover:not(:disabled) { background: var(--red-lt); }
+    .btn-success  { background: var(--green-lt); color: var(--green); border: 1px solid #a8d5b5; }
+    .btn-success:hover:not(:disabled) { background: #d4edda; }
+    .btn-large    { padding: 12px 32px; font-size: 15px; border-radius: var(--radius); }
+    .btn-sm       { padding: 5px 10px; font-size: 12px; }
+
+    /* ══ SCREENS ═════════════════════════════════════════════ */
+    .hidden { display: none !important; }
+    .screen { flex: 1; }
+
+    /* ══ LANDING PAGE ════════════════════════════════════════ */
+    /* Copyright (c) 2025 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor */
+    .screen-landing {
+      display: flex; flex-direction: column; align-items: center;
+      padding: calc(var(--header-h) + 31px + 60px) 24px 80px;
+      text-align: center;
+    }
+    .hero-eyebrow {
+      font-size: 12px; font-weight: 600; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--accent);
+      background: var(--accent-lt); padding: 4px 14px;
+      border-radius: 20px; margin-bottom: 20px;
+    }
+    .hero-title {
+      font-size: clamp(28px, 5vw, 46px);
+      font-weight: 700; line-height: 1.2;
+      letter-spacing: -.02em; color: var(--text);
+      max-width: 700px; margin-bottom: 18px;
+    }
+    .hero-title span { color: var(--red); }
+    .hero-sub {
+      font-size: 16px; color: var(--text2); line-height: 1.7;
+      max-width: 540px; margin-bottom: 32px;
+    }
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-bottom: 14px; }
+    .hero-note { font-size: 12px; color: var(--text3); }
+
+    /* Feature pills */
+    .feature-pills {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      justify-content: center; margin: 48px 0 0; max-width: 680px;
+    }
+    .pill {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 20px; padding: 6px 14px;
+      font-size: 12.5px; color: var(--text2);
+    }
+    .pill svg { color: var(--accent); flex-shrink: 0; }
+
+    /* ══ SIGN IN CARD ════════════════════════════════════════ */
+    /* Copyright (c) 2025 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor */
+    .screen-signin {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 100px 24px 40px;
+    }
+    .signin-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 48px 40px;
+      max-width: 520px; width: 100%; text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    }
+    .signin-card h1 { font-size: 24px; font-weight: 600; margin-bottom: 10px; }
+    .signin-card .sub { color: var(--text2); line-height: 1.7; margin-bottom: 28px; font-size: 14px; }
+    .signin-note { font-size: 12px; color: var(--text3); margin-top: 16px; line-height: 1.7; }
+    .error-msg {
+      background: var(--red-lt); border: 1px solid #f5c6c6;
+      border-radius: var(--radius); padding: 10px 14px;
+      font-size: 13px; color: var(--red); margin-bottom: 16px;
+    }
+
+    /* ══ COLLAPSIBLE ═════════════════════════════════════════ */
+    /* Copyright (c) 2025 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor */
+    .collapsible { border-radius: var(--radius); overflow: hidden; margin-top: 20px; }
+    .collapsible-light { background: #f0f4ff; border: 1px solid #c8d8f8; }
+    .collapsible-footer { background: var(--surface2); border: 1px solid var(--border); }
+    .collapsible summary {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px; cursor: pointer; font-size: 13px; font-weight: 500;
+      user-select: none; list-style: none; color: var(--accent);
+    }
+    .collapsible summary::-webkit-details-marker { display: none; }
+    .collapsible-footer summary { color: var(--text2); }
+    .collapsible summary .chev { transition: transform 0.25s; flex-shrink: 0; }
+    .collapsible[open] summary .chev { transform: rotate(180deg); }
+    .collapsible-body { padding: 0 16px 16px; text-align: left; }
+
+    /* Howto steps */
+    .howto-steps { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .howto-steps li { display: flex; gap: 10px; align-items: flex-start; font-size: 12.5px; color: var(--text2); line-height: 1.6; }
+    .step-num {
+      background: var(--accent); color: #fff; font-weight: 600; font-size: 11px;
+      width: 20px; height: 20px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .howto-steps li strong { color: var(--text); }
+
+    /* ══ LOADING ═════════════════════════════════════════════ */
+    /* Copyright (c) 2025 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor */
+    .screen-loading {
+      display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    }
+    .loading-wrap { text-align: center; }
+    .spinner {
+      width: 40px; height: 40px; margin: 0 auto 20px;
+      border: 3px solid var(--border); border-top-color: var(--accent);
+      border-radius: 50%; animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-wrap p { color: var(--text2); font-size: 14px; }
+    .loading-count { font-size: 12px; margin-top: 6px; color: var(--text3); }
+
+    /* ══ CHANNEL PICKER ══════════════════════════════════════ */
+    /* Copyright (c) 2025 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor */
+    .screen-picker {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 100px 24px 40px;
+    }
+    .picker-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 32px; max-width: 500px; width: 100%;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    }
+    .picker-card h2 { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+    .picker-card p  { color: var(--text2); font-size: 13px; margin-bottom: 20px; line-height: 1.6; }
+    .channel-pick-btn {
+      display: flex; align-items: center; gap: 12px; width: 100%;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 12px 14px;
+      cursor: pointer; color: var(--text); font-family: var(--font);
+      margin-bottom: 8px; transition: border-color 0.15s, background 0.15s; text-align: left;
+    }
+    .channel-pick-btn:hover { border-color: var(--accent); background: var(--accent-lt); }
+    .channel-pick-btn img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+    .ch-thumb-placeholder { width: 40px; height: 40px; border-radius: 50%; background: var(--surface3); flex-shrink: 0; }
+    .ch-name { font-size: 14px; font-weight: 500; }
+    .ch-id   { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+    /* ══ EDITOR ══════════════════════════════════════════════ */
+    /* Copyright (c) 2025 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor */
+    .screen-editor { display: flex; flex-direction: column; }
+
+    .toolbar {
+      position: fixed; top: calc(var(--header-h) + 31px); left: 0; right: 0; z-index: 190;
+      height: var(--toolbar-h);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; background: var(--surface);
+      border-bottom: 1px solid var(--border); gap: 12px; flex-wrap: wrap;
+      box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    }
+    .toolbar-left, .toolbar-right { display: flex; align-items: center; gap: 10px; }
+    .search-wrap { position: relative; }
+    .search-wrap svg { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--text3); }
+    .search-input {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 20px; color: var(--text);
+      font-size: 13px; padding: 6px 12px 6px 32px; width: 260px;
+      outline: none; font-family: var(--font); transition: border-color 0.15s, width 0.2s;
+    }
+    .search-input:focus { border-color: var(--accent); background: var(--surface); width: 320px; }
+    .search-input::placeholder { color: var(--text3); }
+    .video-count { color: var(--text3); font-size: 12px; white-space: nowrap; }
+    .filter-group { display: flex; align-items: center; gap: 8px; }
+    .filter-label { font-size: 12px; color: var(--text3); white-space: nowrap; }
+    .filter-select {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius); color: var(--text);
+      font-size: 12px; padding: 5px 10px; outline: none;
+      font-family: var(--font); cursor: pointer;
+    }
+    .filter-select:focus { border-color: var(--accent); }
+
+    .save-bar {
+      background: #e8f0fd; border-bottom: 1px solid #c4d4f5;
+      padding: 8px 24px; font-size: 12.5px; color: var(--accent);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .save-progress { flex: 1; height: 4px; background: #c4d4f5; border-radius: 2px; overflow: hidden; max-width: 300px; }
+    .save-progress-inner { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.3s; }
+
+    /* ══ TABLE ═══════════════════════════════════════════════ */
+    /* Copyright (c) 2025 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor */
+    .table-section { padding-top: calc(var(--header-h) + 31px + var(--toolbar-h)); }
+    .table-wrap { overflow-x: auto; background: var(--surface); border-bottom: 1px solid var(--border); }
+    .video-table { width: 100%; border-collapse: collapse; min-width: 900px; table-layout: fixed; }
+    .video-table thead tr { background: var(--surface); border-bottom: 2px solid var(--border); }
+    .video-table th {
+      padding: 10px 12px; text-align: left;
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em;
+      color: var(--text3); font-weight: 600; white-space: nowrap; user-select: none;
+    }
+    .col-num    { width: 38px; }
+    .col-thumb  { width: 84px; }
+    .col-title  { width: 220px; }
+    .col-desc   { width: auto; }
+    .col-tags   { width: 200px; }
+    .col-status { width: 68px; }
+    .col-actions { width: 76px; }
+
+    .video-table td { padding: 10px 12px; vertical-align: top; border-bottom: 1px solid var(--border); }
+    .video-row { transition: background 0.1s; }
+    .video-row:hover   { background: #fafafa; }
+    .video-row.changed { background: var(--changed); }
+    .video-row.saved   { background: var(--saved); }
+    .video-row.error   { background: var(--red-lt); }
+
+    .row-num { font-size: 11px; color: var(--text3); text-align: center; padding-top: 14px; }
+    .thumb-wrap { position: relative; }
+    .thumb-wrap a { display: block; text-decoration: none; }
+    .thumb-wrap img { width: 60px; height: 38px; object-fit: cover; border-radius: 4px; display: block; transition: opacity 0.15s; }
+    .thumb-wrap a:hover img { opacity: 0.8; }
+    .thumb-placeholder { width: 60px; height: 38px; background: var(--surface3); border-radius: 4px; }
+
+    .field-wrap { display: flex; flex-direction: column; gap: 3px; }
+    .field-original {
+      font-size: 11px; color: var(--text3); display: none; font-style: italic;
+      line-height: 1.4; word-break: break-word;
+      background: #fff3cd; border-left: 2px solid #ffc107;
+      padding: 3px 6px; border-radius: 0 3px 3px 0; margin-bottom: 2px;
+    }
+    .field-wrap.changed .field-original { display: block; }
+
+    .editable {
+      background: transparent; border: 1px solid transparent;
+      border-radius: 4px; color: var(--text); font-size: 13px;
+      font-family: var(--font); width: 100%; resize: none; outline: none;
+      transition: border-color 0.15s, background 0.15s; line-height: 1.55; padding: 6px 8px;
+    }
+    .editable:hover { border-color: var(--border2); background: var(--surface); }
+    .editable:focus { border-color: var(--accent); background: var(--surface); box-shadow: 0 0 0 2px rgba(6,95,212,.1); }
+    .editable.title-field  { min-height: 58px; height: auto; font-weight: 500; overflow: hidden; }
+    .editable.desc-field   { height: 110px; }
+    .editable.tags-field   { height: 80px; font-size: 12px; color: var(--text2); word-break: break-all; }
+    .editable.is-changed   { border-color: #ffc107 !important; background: #fffdf0 !important; }
+
+    .char-count { font-size: 10px; color: var(--text3); text-align: right; display: none; }
+    .editable:focus + .char-count { display: block; }
+    .char-count.warn { color: var(--yellow); }
+    .char-count.over { color: var(--red); }
+
+    .action-col { display: flex; flex-direction: column; gap: 5px; align-items: stretch; padding-top: 4px; }
+    .btn-save-row {
+      font-size: 12px; padding: 6px 10px; background: var(--accent); color: #fff;
+      border: none; border-radius: var(--radius); cursor: pointer; font-weight: 500;
+      opacity: 0; transition: opacity 0.15s; font-family: var(--font);
+    }
+    .video-row.changed .btn-save-row { opacity: 1; }
+    .btn-revert-row {
+      font-size: 12px; padding: 5px 10px; background: transparent; color: var(--text3);
+      border: 1px solid var(--border2); border-radius: var(--radius); cursor: pointer;
+      opacity: 0; transition: opacity 0.15s; font-family: var(--font);
+    }
+    .video-row.changed .btn-revert-row { opacity: 1; }
+    .btn-revert-row:hover { color: var(--text); background: var(--surface2); }
+    .row-status { font-size: 11px; padding: 2px 6px; border-radius: 3px; font-weight: 600; text-align: center; }
+    .status-saved   { background: var(--green-lt); color: var(--green); }
+    .status-error   { background: var(--red-lt); color: var(--red); }
+    .status-saving  { background: var(--accent-lt); color: var(--accent); }
+    .status-changed { background: var(--yellow-lt); color: var(--yellow); }
+
+    /* ══ PAGINATION ══════════════════════════════════════════ */
+    /* Copyright (c) 2025 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor */
+    .pagination-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 24px; background: var(--surface);
+      border-top: 1px solid var(--border); flex-wrap: wrap; gap: 12px;
+    }
+    .pagination-bar.top { border-top: none; border-bottom: 1px solid var(--border); }
+    .pagination-info { font-size: 12px; color: var(--text3); }
+    .pagination-controls { display: flex; align-items: center; gap: 6px; }
+    .page-btn {
+      width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+      border: 1px solid var(--border2); border-radius: var(--radius);
+      background: var(--surface); color: var(--text2); font-size: 13px;
+      cursor: pointer; font-family: var(--font); transition: all 0.15s;
+    }
+    .page-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); background: var(--accent-lt); }
+    .page-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
+    .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .per-page-wrap { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text3); }
+    .per-page-select {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius); color: var(--text);
+      font-size: 12px; padding: 4px 8px; outline: none; font-family: var(--font); cursor: pointer;
+    }
+
+    /* ══ FOOTER ══════════════════════════════════════════════ */
+    /* Copyright (c) 2025 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor */
+    .footer-area {
+      background: var(--surface); border-top: 1px solid var(--border);
+      padding: 28px 32px; display: flex; flex-direction: column; gap: 16px;
+    }
+
+    /* How it works architecture */
+    .arch-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 8px; }
+    .arch-step {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 12px 14px;
+    }
+    .arch-step-num {
+      width: 22px; height: 22px; border-radius: 50%; background: var(--accent);
+      color: #fff; font-size: 11px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 8px;
+    }
+    .arch-step-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .arch-step-desc { font-size: 12px; color: var(--text2); line-height: 1.6; }
+    .arch-step-tech { font-size: 11px; color: var(--accent); margin-top: 6px; font-weight: 500; }
+    .arch-privacy-note {
+      background: var(--green-lt); border: 1px solid #a8d5b5;
+      border-radius: var(--radius); padding: 10px 14px;
+      font-size: 12.5px; color: var(--green); line-height: 1.6; margin-top: 10px;
+    }
+
+    /* Donation box */
+    .donation-body p { color: var(--text2); font-size: 13px; line-height: 1.7; margin-bottom: 8px; }
+    .donation-body p strong { color: var(--text); }
+    .social-links { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .social-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 12px; border-radius: var(--radius);
+      font-size: 12.5px; font-weight: 500; text-decoration: none;
+      border: 1px solid var(--border2); background: var(--surface2);
+      color: var(--text); transition: background 0.15s;
+    }
+    .social-btn:hover { background: var(--surface3); }
+
+    /* Feedback form */
+    .feedback-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    .form-group label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text3); font-weight: 600; }
+    .form-input, .form-select, .form-textarea {
+      background: var(--surface); border: 1px solid var(--border2);
+      border-radius: var(--radius); color: var(--text);
+      font-size: 13px; font-family: var(--font); padding: 7px 10px;
+      outline: none; transition: border-color 0.15s;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--accent); box-shadow: 0 0 0 2px rgba(6,95,212,.08);
+    }
+    .form-textarea { width: 100%; resize: vertical; min-height: 88px; line-height: 1.6; }
+    .form-footer { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+    .form-note { font-size: 11.5px; color: var(--text3); }
+    .form-note code {
+      background: var(--surface2); padding: 1px 5px; border-radius: 3px;
+      font-size: 11px; color: var(--text2); border: 1px solid var(--border);
+    }
+
+    /* Site footer bottom */
+    .site-footer {
+      padding-top: 14px; border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center;
+    }
+    .footer-links { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+    .footer-links a { color: var(--text3); text-decoration: none; font-size: 12px; transition: color 0.15s; }
+    .footer-links a:hover { color: var(--accent); }
+    .footer-privacy {
+      font-size: 11px; color: var(--text3); background: var(--surface2);
+      border: 1px solid var(--border); border-radius: 6px; padding: 6px 14px; line-height: 1.7;
+    }
+    .footer-made { font-size: 12px; color: var(--text3); }
+    .footer-made a { color: var(--accent); text-decoration: none; }
+    .footer-made a:hover { text-decoration: underline; }
+    .footer-stack {
+      font-size: 11px; color: var(--text3); line-height: 1.7;
+    }
+    .footer-stack a { color: var(--text2); text-decoration: none; }
+    .footer-stack a:hover { color: var(--accent); text-decoration: underline; }
+
+    /* ══ TOAST ═══════════════════════════════════════════════ */
+    /* Copyright (c) 2025 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor */
+    .toast {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      background: #333; color: #fff; padding: 10px 22px; border-radius: 24px;
+      font-size: 13px; z-index: 9999; white-space: nowrap;
+      animation: fadeUp 0.2s ease; box-shadow: 0 4px 16px rgba(0,0,0,.2);
+    }
+    .toast.success { background: #1a7f3c; }
+    .toast.error   { background: #cc0000; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    @media (max-width: 800px) {
+      .feedback-grid { grid-template-columns: 1fr; }
+      .search-input  { width: 200px; }
+      .arch-grid     { grid-template-columns: 1fr 1fr; }
+      .hero-title    { font-size: 28px; }
+    }
+    @media (max-width: 500px) {
+      .arch-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ HEADER ════════════════════════════════════════════════ -->
+<!-- Copyright (c) 2025 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor -->
+<header class="header">
+  <div class="header-left">
+    <a class="logo" href="/youtube-bulk-editor">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="#cc0000"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>
+      YouTube <span class="logo-accent">Bulk</span> Editor
+    </a>
+    <div id="channelBadge" class="channel-badge hidden">
+      <span class="badge-dot"></span>
+      <img id="channelThumb" src="" alt="">
+      <span id="channelName"></span>
+    </div>
+  </div>
+  <div class="header-right">
+    <a href="https://github.com/imchikachirag/youtube-bulk-editor" target="_blank" class="btn btn-ghost btn-sm">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.11.82-.26.82-.58v-2.03c-3.34.72-4.04-1.61-4.04-1.61-.54-1.38-1.33-1.75-1.33-1.75-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.48 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02 0 2.04.13 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+      GitHub
+    </a>
+    <button id="btnDownload" class="btn btn-ghost hidden">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Export CSV
+    </button>
+    <button id="btnSaveAll" class="btn btn-primary hidden">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      Save All
+    </button>
+    <button id="btnSignOut" class="btn btn-danger hidden">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Disconnect
+    </button>
+  </div>
+</header>
+
+<!-- ══ PRIVACY BANNER ════════════════════════════════════════ -->
+<!-- Copyright (c) 2025 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor -->
+<div class="privacy-banner" id="privacyBanner">
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+  Zero server storage &nbsp;·&nbsp; Token lives in your browser only &nbsp;·&nbsp; All video data goes browser-to-YouTube directly &nbsp;·&nbsp;
+  <a href="https://github.com/imchikachirag/youtube-bulk-editor" target="_blank" style="color:#2e7d32;font-weight:600">Open source on GitHub</a>
+</div>
+
+<!-- ══ SIGN IN SCREEN ════════════════════════════════════════ -->
+<!-- Copyright (c) 2025 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor -->
+<div id="screenSignIn" class="screen screen-signin">
+  <div class="signin-card">
+    <div style="margin-bottom:16px">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="#cc0000"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>
+    </div>
+    <h1>YouTube Bulk Editor</h1>
+    <p class="sub">Edit titles, descriptions and tags for all your YouTube videos in one place. No more opening each video one by one.</p>
+    <div id="authError" class="error-msg hidden"></div>
+    <button id="btnSignIn" class="btn btn-primary btn-large">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+      Sign in with Google
+    </button>
+    <p class="signin-note">
+      We request YouTube management permission to read and update your videos.<br>
+      Your token never touches our server after login.
+      <a href="https://github.com/imchikachirag/youtube-bulk-editor" target="_blank" style="color:var(--accent)">Read the source code.</a>
+    </p>
+
+    <details class="collapsible collapsible-light">
+      <summary>
+        <span>How to use this tool</span>
+        <svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </summary>
+      <div class="collapsible-body">
+        <ol class="howto-steps">
+          <li><span class="step-num">1</span><span><strong>Sign in with Google</strong> using the account that manages your YouTube channel. Brand Account users: sign in as the personal account that owns the brand account.</span></li>
+          <li><span class="step-num">2</span><span><strong>Select your channel</strong> if you manage multiple YouTube channels.</span></li>
+          <li><span class="step-num">3</span><span><strong>Edit inline</strong> — click any Title, Description or Tags field to edit it. Changed fields turn yellow and show the original value above for reference.</span></li>
+          <li><span class="step-num">4</span><span><strong>Save row by row</strong> with the blue Save button, or use <strong>Save All</strong> in the header to push every pending change at once.</span></li>
+          <li><span class="step-num">5</span><span><strong>Sort and filter</strong> using the toolbar dropdowns. Use pagination to browse pages of 10, 25 or 50 videos.</span></li>
+          <li><span class="step-num">6</span><span><strong>Export CSV</strong> at any time for a full backup of all your video metadata.</span></li>
+          <li><span class="step-num">7</span><span><strong>Disconnect</strong> when done. This revokes your OAuth token at Google immediately.</span></li>
+        </ol>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ══ LOADING SCREEN ════════════════════════════════════════ -->
+<!-- Copyright (c) 2025 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor -->
+<div id="screenLoading" class="screen screen-loading hidden">
+  <div class="loading-wrap">
+    <div class="spinner"></div>
+    <p id="loadingMsg">Loading...</p>
+    <p id="loadingCount" class="loading-count"></p>
+  </div>
+</div>
+
+<!-- ══ CHANNEL PICKER ════════════════════════════════════════ -->
+<!-- Copyright (c) 2025 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor -->
+<div id="screenPicker" class="screen screen-picker hidden">
+  <div class="picker-card">
+    <h2>Select a channel</h2>
+    <p>Multiple YouTube channels found. Select the one you want to edit.</p>
+    <div id="channelList"></div>
+  </div>
+</div>
+
+<!-- ══ EDITOR SCREEN ═════════════════════════════════════════ -->
+<!-- Copyright (c) 2025 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor -->
+<div id="screenEditor" class="screen screen-editor hidden" style="padding-top:0">
+
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <div class="search-wrap">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="searchInput" type="text" placeholder="Search videos..." class="search-input">
+      </div>
+      <span id="videoCount" class="video-count"></span>
+    </div>
+    <div class="toolbar-right">
+      <div class="filter-group">
+        <span class="filter-label">Sort:</span>
+        <select id="sortSelect" class="filter-select">
+          <option value="default">Default order</option>
+          <option value="title-az">Title A to Z</option>
+          <option value="title-za">Title Z to A</option>
+          <option value="date-new">Newest first</option>
+          <option value="date-old">Oldest first</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Show:</span>
+        <select id="filterSelect" class="filter-select">
+          <option value="all">All videos</option>
+          <option value="changed">Changed only</option>
+          <option value="saved">Saved</option>
+        </select>
+      </div>
+      <button id="btnRefresh" class="btn btn-ghost btn-sm">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <div id="saveBar" class="save-bar hidden" style="margin-top:calc(var(--header-h) + 31px + var(--toolbar-h))">
+    <span id="saveBarMsg"></span>
+    <div id="saveProgress" class="save-progress"></div>
+  </div>
+
+  <div class="table-section">
+
+    <!-- Top pagination -->
+    <div class="pagination-bar top" id="paginationBarTop">
+      <div class="pagination-info" id="paginationInfoTop"></div>
+      <div class="pagination-controls" id="paginationControlsTop"></div>
+      <div class="per-page-wrap">
+        <span>Rows:</span>
+        <select id="perPageSelectTop" class="per-page-select">
+          <option value="10">10</option>
+          <option value="25" selected>25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="video-table">
+        <thead>
+          <tr>
+            <th class="col-num">#</th>
+            <th class="col-thumb"></th>
+            <th class="col-title">Title</th>
+            <th class="col-desc">Description</th>
+            <th class="col-tags">Tags</th>
+            <th class="col-status">Status</th>
+            <th class="col-actions"></th>
+          </tr>
+        </thead>
+        <tbody id="videoTableBody"></tbody>
+      </table>
+    </div>
+
+    <!-- Bottom pagination -->
+    <div class="pagination-bar" id="paginationBar">
+      <div class="pagination-info" id="paginationInfo"></div>
+      <div class="pagination-controls" id="paginationControls"></div>
+      <div class="per-page-wrap">
+        <span>Rows:</span>
+        <select id="perPageSelect" class="per-page-select">
+          <option value="10">10</option>
+          <option value="25" selected>25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FOOTER ══════════════════════════════════════════════ -->
+  <!-- Copyright (c) 2025 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor -->
+  <div class="footer-area">
+
+    <!-- How It Works -->
+    <details class="collapsible collapsible-footer" open>
+      <summary>
+        <span>How It Works — Architecture and Privacy</span>
+        <svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </summary>
+      <div class="collapsible-body">
+        <p style="color:var(--text2);font-size:13px;margin-bottom:12px;line-height:1.6">
+          This tool is built entirely on trusted, industry-standard infrastructure. Every component is auditable.
+          The full source code is on <a href="https://github.com/imchikachirag/youtube-bulk-editor" target="_blank" style="color:var(--accent)">GitHub</a>.
+        </p>
+        <div class="arch-grid">
+          <div class="arch-step">
+            <div class="arch-step-num">1</div>
+            <div class="arch-step-title">You sign in</div>
+            <div class="arch-step-desc">Clicking "Sign in with Google" redirects you to Google's own login page. We never see your password.</div>
+            <div class="arch-step-tech">Google OAuth 2.0</div>
+          </div>
+          <div class="arch-step">
+            <div class="arch-step-num">2</div>
+            <div class="arch-step-title">Login handshake</div>
+            <div class="arch-step-desc">Google sends a one-time code to our server to complete the secure handshake. This is standard OAuth — required by Google's own protocol.</div>
+            <div class="arch-step-tech">Google Cloud Run (by Google)</div>
+          </div>
+          <div class="arch-step">
+            <div class="arch-step-num">3</div>
+            <div class="arch-step-title">Token to your browser</div>
+            <div class="arch-step-desc">Our server exchanges the code for a token and immediately sends it to your browser. The token is never stored, logged, or written to any database.</div>
+            <div class="arch-step-tech">sessionStorage — browser only</div>
+          </div>
+          <div class="arch-step">
+            <div class="arch-step-num">4</div>
+            <div class="arch-step-title">Direct to YouTube</div>
+            <div class="arch-step-desc">All video reads and edits go directly from your browser to YouTube. Our server is never involved again. Your video data never passes through us.</div>
+            <div class="arch-step-tech">YouTube Data API v3 (by Google)</div>
+          </div>
+        </div>
+        <div class="arch-privacy-note">
+          Your OAuth token is cleared from sessionStorage the moment you close this tab or click Disconnect — which also revokes it at Google. Nothing persists. The source code proving this is publicly readable at <a href="https://github.com/imchikachirag/youtube-bulk-editor" target="_blank" style="color:var(--green);font-weight:600">github.com/imchikachirag/youtube-bulk-editor</a>
+        </div>
+      </div>
+    </details>
+
+    <!-- How to use -->
+    <details class="collapsible collapsible-footer">
+      <summary>
+        <span>How to Use</span>
+        <svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </summary>
+      <div class="collapsible-body">
+        <ol class="howto-steps">
+          <li><span class="step-num">1</span><span><strong>Sign in with Google</strong> using the account that manages your YouTube channel. Brand Account users: sign in as the personal account that owns the brand account, then select the brand channel from the picker.</span></li>
+          <li><span class="step-num">2</span><span><strong>Edit inline</strong> — click any Title, Description or Tags field to edit it. Changed fields turn yellow and show the original value above for reference.</span></li>
+          <li><span class="step-num">3</span><span><strong>Save row by row</strong> with the blue Save button, or use <strong>Save All</strong> in the header to push every pending change at once.</span></li>
+          <li><span class="step-num">4</span><span><strong>Sort and filter</strong> using the toolbar. Sort by title or date. Filter to show only changed or saved rows. Use pagination for large channels.</span></li>
+          <li><span class="step-num">5</span><span><strong>Export CSV</strong> at any time for a full backup of all video metadata.</span></li>
+          <li><span class="step-num">6</span><span><strong>Disconnect</strong> when done. This revokes your OAuth token at Google immediately.</span></li>
+        </ol>
+      </div>
+    </details>
+
+    <!-- Donation / Thank you -->
+    <details class="collapsible collapsible-footer">
+      <summary>
+        <span>Found This Useful? Support the Cause</span>
+        <svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </summary>
+      <div class="collapsible-body donation-body">
+        <p>This tool is completely free and always will be. No ads, no subscriptions, no data harvesting.</p>
+        <p><strong>Want to say thank you?</strong> Drop a message on Twitter/X. Hearing how this tool helped your channel is the best reward. 🙏</p>
+        <p><strong>Want to give back?</strong> Please donate a generous amount to any NGO of your choice. That is all the payment I ask for. 💚</p>
+        <p><strong>Want to contribute?</strong> The code is open source on GitHub. Issues, pull requests and feature suggestions are welcome.</p>
+        <div class="social-links">
+          <a href="https://twitter.com/imchikachirag" target="_blank" class="social-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            @imchikachirag
+          </a>
+          <a href="https://github.com/imchikachirag/youtube-bulk-editor" target="_blank" class="social-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.11.82-.26.82-.58v-2.03c-3.34.72-4.04-1.61-4.04-1.61-.54-1.38-1.33-1.75-1.33-1.75-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.48 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02 0 2.04.13 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+            Star on GitHub
+          </a>
+        </div>
+      </div>
+    </details>
+
+    <!-- Feedback form -->
+    <details class="collapsible collapsible-footer">
+      <summary>
+        <span>Send Feedback to Chirag</span>
+        <svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </summary>
+      <div class="collapsible-body">
+        <p style="color:var(--text2);font-size:13px;margin-bottom:14px;line-height:1.6">Found a bug, have a feature idea, or want to share your experience? I would love to hear from you.</p>
+        <div class="feedback-grid">
+          <div class="form-group">
+            <label>Your Name</label>
+            <input id="fbName" type="text" class="form-input" placeholder="e.g. Rahul Sharma">
+          </div>
+          <div class="form-group">
+            <label>Channel (optional)</label>
+            <input id="fbChannel" type="text" class="form-input" placeholder="e.g. youtube.com/c/yourchannel">
+          </div>
+          <div class="form-group">
+            <label>Type</label>
+            <select id="fbType" class="form-select">
+              <option value="">Select type...</option>
+              <option>Bug Report</option>
+              <option>Feature Request</option>
+              <option>General Feedback</option>
+              <option>Just saying thanks!</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Rating</label>
+            <select id="fbRating" class="form-select">
+              <option>5 stars - Excellent</option>
+              <option>4 stars - Good</option>
+              <option>3 stars - Average</option>
+              <option>2 stars - Needs Work</option>
+              <option>1 star - Poor</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Your Feedback</label>
+          <textarea id="fbMessage" class="form-textarea" placeholder="Tell Chirag what you think, what worked well, what could be improved..."></textarea>
+        </div>
+        <div class="form-footer">
+          <button id="btnSendFeedback" class="btn btn-success">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Send Feedback
+          </button>
+          <span class="form-note">Sends to <code>jain.chirag+yt-editor@gmail.com</code></span>
+        </div>
+      </div>
+    </details>
+
+    <!-- Site footer -->
+    <!-- Copyright (c) 2025 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor -->
+    <div class="site-footer">
+      <div class="footer-links">
+        <a href="https://twitter.com/imchikachirag" target="_blank">Twitter @imchikachirag</a>
+        <a href="https://github.com/imchikachirag/youtube-bulk-editor" target="_blank">GitHub — Open Source</a>
+        <a href="https://chiragmehta.info" target="_blank">chiragmehta.info</a>
+        <a href="mailto:jain.chirag+yt-editor@gmail.com">Contact</a>
+        <a href="https://chiragmehta.info/youtube-bulk-editor-privacy" target="_blank">Privacy Policy</a>
+      </div>
+      <div class="footer-stack">
+        Powered by
+        <a href="https://cloud.google.com/run" target="_blank">Google Cloud Run</a> &nbsp;·&nbsp;
+        <a href="https://developers.google.com/youtube/v3" target="_blank">YouTube Data API v3</a> &nbsp;·&nbsp;
+        <a href="https://developers.google.com/identity/protocols/oauth2" target="_blank">Google OAuth 2.0</a> &nbsp;·&nbsp;
+        <a href="https://github.com/imchikachirag/youtube-bulk-editor" target="_blank">Open Source on GitHub</a>
+      </div>
+      <div class="footer-privacy">
+        Zero server storage &nbsp;·&nbsp; Token lives in your browser tab only &nbsp;·&nbsp; Video data goes browser-to-YouTube directly &nbsp;·&nbsp; Disconnect revokes access at Google instantly
+      </div>
+      <p class="footer-made">
+        Made with love in India by
+        <a href="https://chiragmehta.info" target="_blank">Chirag Mehta</a> &nbsp;·&nbsp;
+        <a href="https://twitter.com/imchikachirag" target="_blank">@imchikachirag</a>
+      </p>
+      <p style="font-size:11px;color:var(--text3)">Copyright 2025 Chirag Mehta. MIT License.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ TOAST ══════════════════════════════════════════════════ -->
+<div id="toast" class="toast hidden"></div>
+
+<!-- ══ MAIN SCRIPT ════════════════════════════════════════════ -->
+<!-- Copyright (c) 2025 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor -->
+<script src="editor.js"></script>
+</body>
+</html>
