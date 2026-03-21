@@ -17,8 +17,7 @@
 
 // ── Config ───────────────────────────────────────────────────
 // Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
-// const BACKEND_URL = window.YT_EDITOR_CONFIG?.backendUrl || 'https://youtube-bulk-editor-api-REPLACE.run.app';
-const BACKEND_URL = window.YT_EDITOR_CONFIG?.backendUrl || 'https://youtube-bulk-editor-api-48045104741.asia-south1.run.app';
+const BACKEND_URL = window.YT_EDITOR_CONFIG?.backendUrl || 'https://youtube-bulk-editor-api-REPLACE.run.app';
 const YT_BASE     = 'https://www.googleapis.com/youtube/v3';
 
 // ── DOM refs ─────────────────────────────────────────────────
@@ -328,20 +327,24 @@ function renderPage() {
       </td>
       <td><div class="field-wrap" data-field="title">
         <div class="field-original"></div>
-        <textarea class="editable title-field" data-vid="${id}" data-field="title" maxlength="100">${esc(editedVideos[id]?.title ?? sn.title ?? '')}</textarea>
-        <span class="char-count" data-max="100"></span>
+        <textarea class="editable title-field" data-vid="${id}" data-field="title" maxlength="100" placeholder="Video title...">${esc(editedVideos[id]?.title ?? sn.title ?? '')}</textarea>
+        <span class="char-count" data-max="100">${(editedVideos[id]?.title ?? sn.title ?? '').length} / 100</span>
       </div></td>
       <td><div class="field-wrap" data-field="description">
         <div class="field-original"></div>
-        <textarea class="editable desc-field" data-vid="${id}" data-field="description" maxlength="5000">${esc(editedVideos[id]?.description ?? sn.description ?? '')}</textarea>
-        <span class="char-count" data-max="5000"></span>
+        <textarea class="editable desc-field" data-vid="${id}" data-field="description" maxlength="5000" placeholder="Video description...">${esc(editedVideos[id]?.description ?? sn.description ?? '')}</textarea>
+        <span class="char-count" data-max="5000">${(editedVideos[id]?.description ?? sn.description ?? '').length} / 5000</span>
       </div></td>
       <td><div class="field-wrap" data-field="tags">
         <div class="field-original"></div>
-        <textarea class="editable tags-field" data-vid="${id}" data-field="tags">${esc(editedVideos[id]?.tags ?? tags)}</textarea>
+        <textarea class="editable tags-field" data-vid="${id}" data-field="tags" placeholder="tag1, tag2, tag3...">${esc(editedVideos[id]?.tags ?? tags)}</textarea>
+        <span class="tags-hint">Comma separated</span>
       </div></td>
       <td><span class="row-status" data-vid="${id}">${statusHtml}</span></td>
       <td><div class="action-col">
+        <div class="edit-hint" title="Click any field to edit">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </div>
         <button class="btn-save-row" data-vid="${id}">Save</button>
         <button class="btn-revert-row" data-vid="${id}">Revert</button>
       </div></td>`;
@@ -368,7 +371,9 @@ function renderPage() {
       if (el.classList.contains('title-field')) el.addEventListener('input', autoResize);
       const cc  = el.nextElementSibling;
       const max = el.getAttribute('maxlength');
-      if (cc && max) updateCharCount(cc, el.value.length, parseInt(max));
+      if (cc && max && cc.classList.contains('char-count')) {
+        updateCharCount(cc, el.value.length, parseInt(max));
+      }
     });
     tr.querySelector('.btn-save-row').addEventListener('click', () => saveRow(id));
     tr.querySelector('.btn-revert-row').addEventListener('click', () => revertRow(id));

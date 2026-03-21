@@ -356,73 +356,112 @@
       color: var(--text3); font-weight: 600; white-space: nowrap; user-select: none;
     }
     .col-num    { width: 38px; }
-    .col-thumb  { width: 84px; }
+    .col-thumb  { width: 90px; }
     .col-title  { width: 220px; }
     .col-desc   { width: auto; }
-    .col-tags   { width: 200px; }
-    .col-status { width: 68px; }
-    .col-actions { width: 76px; }
+    .col-tags   { width: 190px; }
+    .col-status { width: 72px; }
+    .col-actions { width: 60px; }
 
+    /* Alternating row stripes for easier scanning */
     .video-table td { padding: 10px 12px; vertical-align: top; border-bottom: 1px solid var(--border); }
     .video-row { transition: background 0.1s; }
-    .video-row:hover   { background: #fafafa; }
-    .video-row.changed { background: var(--changed); }
-    .video-row.saved   { background: var(--saved); }
-    .video-row.error   { background: var(--red-lt); }
+    .video-row:nth-child(even) { background: #fafafa; }
+    .video-row:hover { background: #f0f4ff !important; }
+    .video-row.changed { background: var(--changed) !important; }
+    .video-row.saved   { background: var(--saved) !important; }
+    .video-row.error   { background: var(--red-lt) !important; }
 
-    .row-num { font-size: 11px; color: var(--text3); text-align: center; padding-top: 14px; }
+    .row-num { font-size: 11px; color: var(--text3); text-align: center; padding-top: 16px; }
+
+    /* Thumbnail with play overlay */
     .thumb-wrap { position: relative; }
-    .thumb-wrap a { display: block; text-decoration: none; }
-    .thumb-wrap img { width: 60px; height: 38px; object-fit: cover; border-radius: 4px; display: block; transition: opacity 0.15s; }
-    .thumb-wrap a:hover img { opacity: 0.8; }
-    .thumb-placeholder { width: 60px; height: 38px; background: var(--surface3); border-radius: 4px; }
+    .thumb-wrap a { display: block; text-decoration: none; position: relative; }
+    .thumb-wrap img { width: 64px; height: 40px; object-fit: cover; border-radius: 5px; display: block; transition: opacity 0.15s; }
+    .thumb-wrap a:hover img { opacity: 0.75; }
+    .thumb-wrap a::after {
+      content: '▶'; position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; color: #fff;
+      text-shadow: 0 1px 4px rgba(0,0,0,.6);
+      opacity: 0; transition: opacity 0.15s;
+    }
+    .thumb-wrap a:hover::after { opacity: 1; }
+    .thumb-placeholder { width: 64px; height: 40px; background: var(--surface3); border-radius: 5px; }
 
-    .field-wrap { display: flex; flex-direction: column; gap: 3px; }
+    /* Field label above each editable — makes it obvious what each cell is */
+    .field-wrap { display: flex; flex-direction: column; gap: 4px; }
+    .field-label {
+      font-size: 10px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .06em; color: var(--text3);
+    }
     .field-original {
-      font-size: 11px; color: var(--text3); display: none; font-style: italic;
+      font-size: 11px; color: #8a6000; display: none; font-style: italic;
       line-height: 1.4; word-break: break-word;
-      background: #fff3cd; border-left: 2px solid #ffc107;
-      padding: 3px 6px; border-radius: 0 3px 3px 0; margin-bottom: 2px;
+      background: #fff8e1; border-left: 3px solid #ffc107;
+      padding: 4px 8px; border-radius: 0 4px 4px 0; margin-bottom: 2px;
     }
     .field-wrap.changed .field-original { display: block; }
 
+    /* Always show a subtle border so fields look editable from the start */
     .editable {
-      background: transparent; border: 1px solid transparent;
-      border-radius: 4px; color: var(--text); font-size: 13px;
-      font-family: var(--font); width: 100%; resize: none; outline: none;
-      transition: border-color 0.15s, background 0.15s; line-height: 1.55; padding: 6px 8px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 5px; color: var(--text); font-size: 13px;
+      font-family: var(--font); width: 100%; resize: vertical; outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s; line-height: 1.6; padding: 7px 9px;
     }
-    .editable:hover { border-color: var(--border2); background: var(--surface); }
-    .editable:focus { border-color: var(--accent); background: var(--surface); box-shadow: 0 0 0 2px rgba(6,95,212,.1); }
-    .editable.title-field  { min-height: 58px; height: auto; font-weight: 500; overflow: hidden; }
-    .editable.desc-field   { height: 110px; }
-    .editable.tags-field   { height: 80px; font-size: 12px; color: var(--text2); word-break: break-all; }
-    .editable.is-changed   { border-color: #ffc107 !important; background: #fffdf0 !important; }
+    .editable:hover { border-color: var(--border2); background: #fafeff; }
+    .editable:focus {
+      border-color: var(--accent); background: var(--surface);
+      box-shadow: 0 0 0 3px rgba(6,95,212,.12);
+      resize: both;
+    }
+    .editable.title-field  { min-height: 52px; height: auto; font-weight: 500; font-size: 13.5px; overflow: hidden; resize: none; }
+    .editable.desc-field   { height: 96px; font-size: 12.5px; line-height: 1.6; }
+    .editable.tags-field   { height: 68px; font-size: 12px; color: var(--text2); word-break: break-word; }
+    .editable.is-changed   { border-color: #f59e0b !important; background: #fffbeb !important; box-shadow: 0 0 0 3px rgba(245,158,11,.12) !important; }
 
-    .char-count { font-size: 10px; color: var(--text3); text-align: right; display: none; }
-    .editable:focus + .char-count { display: block; }
-    .char-count.warn { color: var(--yellow); }
-    .char-count.over { color: var(--red); }
+    /* Char count always subtly visible, not just on focus */
+    .char-count { font-size: 10px; color: var(--text3); text-align: right; margin-top: 2px; }
+    .char-count.warn { color: var(--yellow); font-weight: 600; }
+    .char-count.over { color: var(--red); font-weight: 600; }
 
-    .action-col { display: flex; flex-direction: column; gap: 5px; align-items: stretch; padding-top: 4px; }
+    /* Tags styled as comma-separated pills hint */
+    .tags-hint { font-size: 10px; color: var(--text3); margin-top: 2px; }
+
+    /* Action column — always show a subtle icon, not hidden */
+    .action-col { display: flex; flex-direction: column; gap: 6px; align-items: stretch; padding-top: 2px; }
     .btn-save-row {
       font-size: 12px; padding: 6px 10px; background: var(--accent); color: #fff;
-      border: none; border-radius: var(--radius); cursor: pointer; font-weight: 500;
-      opacity: 0; transition: opacity 0.15s; font-family: var(--font);
+      border: none; border-radius: var(--radius); cursor: pointer; font-weight: 600;
+      opacity: 0; transition: opacity 0.2s, transform 0.15s; font-family: var(--font);
+      transform: translateY(4px);
     }
-    .video-row.changed .btn-save-row { opacity: 1; }
+    .video-row.changed .btn-save-row { opacity: 1; transform: translateY(0); }
+    .btn-save-row:hover { background: var(--accent-h); }
     .btn-revert-row {
-      font-size: 12px; padding: 5px 10px; background: transparent; color: var(--text3);
+      font-size: 11px; padding: 5px 10px; background: transparent; color: var(--text3);
       border: 1px solid var(--border2); border-radius: var(--radius); cursor: pointer;
-      opacity: 0; transition: opacity 0.15s; font-family: var(--font);
+      opacity: 0; transition: opacity 0.2s, transform 0.15s; font-family: var(--font);
+      transform: translateY(4px);
     }
-    .video-row.changed .btn-revert-row { opacity: 1; }
-    .btn-revert-row:hover { color: var(--text); background: var(--surface2); }
-    .row-status { font-size: 11px; padding: 2px 6px; border-radius: 3px; font-weight: 600; text-align: center; }
+    .video-row.changed .btn-revert-row { opacity: 1; transform: translateY(0); }
+    .btn-revert-row:hover { color: var(--red); border-color: #f5c6c6; background: var(--red-lt); }
+
+    /* Edit hint icon — always visible, nudges user that cell is editable */
+    .edit-hint {
+      display: flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: var(--radius);
+      border: 1px solid var(--border); background: var(--surface2);
+      color: var(--text3); cursor: default;
+    }
+    .video-row.changed .edit-hint { display: none; }
+
+    .row-status { font-size: 11px; padding: 3px 7px; border-radius: 4px; font-weight: 600; text-align: center; display: inline-block; }
     .status-saved   { background: var(--green-lt); color: var(--green); }
     .status-error   { background: var(--red-lt); color: var(--red); }
     .status-saving  { background: var(--accent-lt); color: var(--accent); }
-    .status-changed { background: var(--yellow-lt); color: var(--yellow); }
+    .status-changed { background: #fef3c7; color: #92400e; }
 
     /* ══ PAGINATION ══════════════════════════════════════════ */
     /* Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor */
@@ -732,9 +771,9 @@
           <tr>
             <th class="col-num">#</th>
             <th class="col-thumb"></th>
-            <th class="col-title">Title</th>
-            <th class="col-desc">Description</th>
-            <th class="col-tags">Tags</th>
+            <th class="col-title">Title <span style="color:var(--accent);font-size:9px;font-weight:700;background:var(--accent-lt);padding:1px 5px;border-radius:3px;margin-left:4px;vertical-align:middle">EDITABLE</span></th>
+            <th class="col-desc">Description <span style="color:var(--accent);font-size:9px;font-weight:700;background:var(--accent-lt);padding:1px 5px;border-radius:3px;margin-left:4px;vertical-align:middle">EDITABLE</span></th>
+            <th class="col-tags">Tags <span style="color:var(--accent);font-size:9px;font-weight:700;background:var(--accent-lt);padding:1px 5px;border-radius:3px;margin-left:4px;vertical-align:middle">EDITABLE</span></th>
             <th class="col-status">Status</th>
             <th class="col-actions"></th>
           </tr>
