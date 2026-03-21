@@ -360,8 +360,8 @@
     .col-title  { width: 220px; }
     .col-desc   { width: auto; }
     .col-tags   { width: 190px; }
-    .col-status { width: 72px; }
-    .col-actions { width: 60px; }
+    .col-status { width: 68px; }
+    .col-actions { width: 90px; }
 
     /* Alternating row stripes for easier scanning */
     .video-table td { padding: 10px 12px; vertical-align: top; border-bottom: 1px solid var(--border); }
@@ -430,20 +430,20 @@
     .tags-hint { font-size: 10px; color: var(--text3); margin-top: 2px; }
 
     /* Action column — always show a subtle icon, not hidden */
-    .action-col { display: flex; flex-direction: column; gap: 6px; align-items: stretch; padding-top: 2px; }
+    .action-col { display: flex; flex-direction: column; gap: 6px; align-items: stretch; padding-top: 2px; min-width: 72px; }
     .btn-save-row {
-      font-size: 12px; padding: 6px 10px; background: var(--accent); color: #fff;
+      font-size: 12px; padding: 6px 8px; background: var(--accent); color: #fff;
       border: none; border-radius: var(--radius); cursor: pointer; font-weight: 600;
       opacity: 0; transition: opacity 0.2s, transform 0.15s; font-family: var(--font);
-      transform: translateY(4px);
+      transform: translateY(4px); white-space: nowrap; width: 100%;
     }
     .video-row.changed .btn-save-row { opacity: 1; transform: translateY(0); }
     .btn-save-row:hover { background: var(--accent-h); }
     .btn-revert-row {
-      font-size: 11px; padding: 5px 10px; background: transparent; color: var(--text3);
+      font-size: 11px; padding: 5px 8px; background: transparent; color: var(--text3);
       border: 1px solid var(--border2); border-radius: var(--radius); cursor: pointer;
       opacity: 0; transition: opacity 0.2s, transform 0.15s; font-family: var(--font);
-      transform: translateY(4px);
+      transform: translateY(4px); white-space: nowrap; width: 100%;
     }
     .video-row.changed .btn-revert-row { opacity: 1; transform: translateY(0); }
     .btn-revert-row:hover { color: var(--red); border-color: #f5c6c6; background: var(--red-lt); }
