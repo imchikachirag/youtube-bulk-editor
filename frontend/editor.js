@@ -17,9 +17,8 @@
 
 // ── Config ───────────────────────────────────────────────────
 // Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
-// const BACKEND_URL = window.YT_EDITOR_CONFIG?.backendUrl || 'https://youtube-bulk-editor-api-REPLACE.run.app';
+const APP_VERSION = '2.1.0';
 const BACKEND_URL = window.YT_EDITOR_CONFIG?.backendUrl || 'https://youtube-bulk-editor-api-48045104741.asia-south1.run.app';
-
 const YT_BASE     = 'https://www.googleapis.com/youtube/v3';
 
 // ── DOM refs ─────────────────────────────────────────────────
@@ -62,6 +61,12 @@ function setLoading(msg, count = '') {
 // Hash fragments are never sent to servers or written to logs.
 // We read it once, store in sessionStorage, then clean the URL.
 window.addEventListener('DOMContentLoaded', () => {
+  // Set version badge from constant
+  const vBadge = $('appVersionBadge');
+  if (vBadge) vBadge.textContent = `v${APP_VERSION}`;
+  const vFooter = $('footerVersion');
+  if (vFooter) vFooter.textContent = `v${APP_VERSION}`;
+
   const params    = new URLSearchParams(window.location.search);
   const hashToken = new URLSearchParams(window.location.hash.slice(1)).get('token');
   const authError = params.get('auth_error');
@@ -121,7 +126,7 @@ $('btnSignOut').addEventListener('click', async () => {
   editedVideos = {};
   savedRows    = new Set();
   $('channelBadge').classList.add('hidden');
-  ['btnDownload', 'btnSaveAll', 'btnSignOut', 'btnSwitchChannel'].forEach(id => $(id).classList.add('hidden'));
+  ['btnDownload', 'btnImport', 'btnSaveAll', 'btnSignOut', 'btnSwitchChannel'].forEach(id => $(id).classList.add('hidden'));
   showScreen('signIn');
   showToast('Disconnected. Token revoked at Google.', 'success');
 });
@@ -235,7 +240,7 @@ async function loadVideos(channel) {
 
       for (let i = 0; i < ids.length; i += 50) {
         const chunk  = ids.slice(i, i + 50).join(',');
-        const detail = await ytFetch(`/videos?part=snippet,status&id=${chunk}&maxResults=50`);
+        const detail = await ytFetch(`/videos?part=snippet,status,statistics,contentDetails&id=${chunk}&maxResults=50`);
         allVideos.push(...(detail.items || []));
         $('loadingCount').textContent = `${allVideos.length} videos loaded...`;
       }
@@ -249,6 +254,7 @@ async function loadVideos(channel) {
     applyFiltersAndRender();
     showScreen('editor');
     $('btnDownload').classList.remove('hidden');
+    $('btnImport').classList.remove('hidden');
     $('btnSaveAll').classList.remove('hidden');
     $('btnSignOut').classList.remove('hidden');
     // Only show Switch Channel if user has more than one channel
@@ -636,17 +642,69 @@ $('btnRefresh').addEventListener('click', async () => {
 // Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
 $('btnDownload').addEventListener('click', () => {
   if (!allVideos.length) return;
-  const rows = [['Video ID','Title','Description','Tags','URL']];
+
+  const headers = [
+    'Video ID',
+    'Title',
+    'Description',
+    'Tags',
+    'Privacy Status',
+    'Publish Status',
+    'Published At',
+    'Last Updated At',
+    'Duration',
+    'Views',
+    'Likes',
+    'Comments',
+    'Default Language',
+    'Category ID',
+    'Live Broadcast Content',
+    'URL'
+  ];
+
+  const rows = [headers];
+
   allVideos.forEach(v => {
-    const sn = v.snippet || {};
+    const sn   = v.snippet          || {};
+    const st   = v.status           || {};
+    const cd   = v.contentDetails   || {};
+    const stat = v.statistics       || {};
+
+    // Format ISO 8601 duration (PT4M13S) to human readable (4m 13s)
+    function parseDuration(iso) {
+      if (!iso) return '';
+      const m = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+      if (!m) return iso;
+      const h = parseInt(m[1]||0), min = parseInt(m[2]||0), s = parseInt(m[3]||0);
+      return [h && `${h}h`, min && `${min}m`, `${s}s`].filter(Boolean).join(' ');
+    }
+
+    // Format date to readable form
+    function fmtDate(iso) {
+      if (!iso) return '';
+      return new Date(iso).toISOString().replace('T',' ').substring(0,19) + ' UTC';
+    }
+
     rows.push([
-      v.id,
-      csvCell(sn.title||''),
-      csvCell(sn.description||''),
-      csvCell((sn.tags||[]).join(', ')),
+      csvCell(v.id),
+      csvCell(sn.title                      || ''),
+      csvCell(sn.description                || ''),
+      csvCell((sn.tags || []).join(', ')    || ''),
+      csvCell(st.privacyStatus              || ''),   // public / private / unlisted
+      csvCell(st.uploadStatus               || ''),   // processed / uploaded / etc
+      csvCell(fmtDate(sn.publishedAt)       || ''),
+      csvCell(fmtDate(cd.lastUpdated)        || ''),   // last metadata update
+      csvCell(parseDuration(cd.duration)    || ''),
+      csvCell(stat.viewCount                || '0'),
+      csvCell(stat.likeCount                || '0'),
+      csvCell(stat.commentCount             || '0'),
+      csvCell(sn.defaultLanguage            || ''),
+      csvCell(sn.categoryId                 || ''),
+      csvCell(sn.liveBroadcastContent       || ''),
       csvCell(`https://www.youtube.com/watch?v=${v.id}`)
     ]);
   });
+
   const csv  = rows.map(r => r.join(',')).join('\n');
   const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
   const a    = document.createElement('a');
@@ -656,6 +714,167 @@ $('btnDownload').addEventListener('click', () => {
   showToast('CSV downloaded', 'success');
 });
 function csvCell(val) { return `"${String(val).replace(/"/g,'""')}"`; }
+
+// ── Import CSV ────────────────────────────────────────────────
+// Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
+// Accepts the same CSV format as Export CSV.
+// Parses the file, matches video IDs against currently loaded videos,
+// shows a preview modal, then loads changes into the editor on confirm.
+
+let importParsed = []; // holds parsed rows ready to apply
+
+$('btnImport').addEventListener('click', () => {
+  if (!allVideos.length) { showToast('No videos loaded yet', 'error'); return; }
+  $('csvFileInput').value = '';
+  $('csvFileInput').click();
+});
+
+$('csvFileInput').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => parseAndPreviewCSV(ev.target.result);
+  reader.readAsText(file, 'UTF-8');
+});
+
+function parseAndPreviewCSV(raw) {
+  // Strip BOM if present
+  const text = raw.replace(/^\uFEFF/, '');
+  const lines = text.split(/\r?\n/).filter(l => l.trim());
+  if (lines.length < 2) { showToast('CSV appears empty', 'error'); return; }
+
+  // Parse CSV rows respecting quoted fields with commas inside
+  function parseCSVLine(line) {
+    const result = [];
+    let cur = '', inQuote = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') {
+        if (inQuote && line[i+1] === '"') { cur += '"'; i++; }
+        else inQuote = !inQuote;
+      } else if (ch === ',' && !inQuote) {
+        result.push(cur); cur = '';
+      } else {
+        cur += ch;
+      }
+    }
+    result.push(cur);
+    return result;
+  }
+
+  const headers = parseCSVLine(lines[0]).map(h => h.trim().toLowerCase());
+  const idCol    = headers.indexOf('video id');
+  const titleCol = headers.indexOf('title');
+  const descCol  = headers.indexOf('description');
+  const tagsCol  = headers.indexOf('tags');
+
+  if (idCol === -1) { showToast('CSV missing "Video ID" column', 'error'); return; }
+
+  // Build lookup of currently loaded videos
+  const loadedMap = {};
+  allVideos.forEach(v => { loadedMap[v.id] = v; });
+
+  importParsed = [];
+  const tableRows = [];
+  let countOk = 0, countSkip = 0, countErr = 0;
+
+  for (let i = 1; i < lines.length; i++) {
+    const cols  = parseCSVLine(lines[i]);
+    const vid   = (cols[idCol] || '').trim();
+    if (!vid) continue;
+
+    const csvTitle = titleCol > -1 ? (cols[titleCol] || '').trim() : null;
+    const csvDesc  = descCol  > -1 ? (cols[descCol]  || '').trim() : null;
+    const csvTags  = tagsCol  > -1 ? (cols[tagsCol]  || '').trim() : null;
+
+    const existing = loadedMap[vid];
+
+    if (!existing) {
+      countErr++;
+      tableRows.push({ vid, status: 'err', title: csvTitle || vid, changes: 'Not in loaded channel' });
+      continue;
+    }
+
+    const sn = existing.snippet || {};
+    const changes = [];
+    if (csvTitle !== null && csvTitle !== (sn.title || ''))             changes.push('Title');
+    if (csvDesc  !== null && csvDesc  !== (sn.description || ''))       changes.push('Description');
+    if (csvTags  !== null && csvTags  !== (sn.tags || []).join(', '))   changes.push('Tags');
+
+    if (!changes.length) {
+      countSkip++;
+      tableRows.push({ vid, status: 'skip', title: sn.title || vid, changes: 'No changes' });
+      continue;
+    }
+
+    countOk++;
+    importParsed.push({ vid, csvTitle, csvDesc, csvTags, changes });
+    tableRows.push({ vid, status: 'ok', title: sn.title || vid, changes: changes.join(', ') });
+  }
+
+  // Render summary
+  $('importSummary').innerHTML = `
+    <span><span class="ok">${countOk}</span> will update</span>
+    <span><span class="warn">${countSkip}</span> no changes</span>
+    <span><span class="err">${countErr}</span> not found in channel</span>
+    <span style="color:var(--text3)">${lines.length - 1} rows in file</span>`;
+
+  // Render table
+  const tbody = $('importTableBody');
+  tbody.innerHTML = tableRows.map(r => `
+    <tr class="row-${r.status}">
+      <td><span class="import-badge ${r.status}">${
+        r.status === 'ok' ? 'Will Update' : r.status === 'skip' ? 'No Change' : 'Not Found'
+      }</span></td>
+      <td style="font-family:monospace;font-size:11px">${r.vid}</td>
+      <td style="font-size:12px">${r.title.substring(0, 55)}${r.title.length > 55 ? '...' : ''}</td>
+      <td style="font-size:12px;color:var(--text2)">${r.changes}</td>
+    </tr>`).join('');
+
+  $('importFooterNote').textContent = countOk
+    ? `${countOk} video${countOk > 1 ? 's' : ''} will be marked as edited. Review each row before saving.`
+    : 'Nothing to import.';
+
+  $('btnConfirmImport').disabled = countOk === 0;
+  $('importModal').classList.remove('hidden');
+}
+
+$('btnCloseImport').addEventListener('click',  () => $('importModal').classList.add('hidden'));
+$('btnCancelImport').addEventListener('click', () => $('importModal').classList.add('hidden'));
+
+$('btnConfirmImport').addEventListener('click', () => {
+  if (!importParsed.length) return;
+  let applied = 0;
+
+  importParsed.forEach(({ vid, csvTitle, csvDesc, csvTags, changes }) => {
+    const existing = allVideos.find(v => v.id === vid);
+    if (!existing) return;
+    const sn = existing.snippet || {};
+
+    if (!editedVideos[vid]) editedVideos[vid] = {};
+    if (csvTitle !== null && changes.includes('Title'))       editedVideos[vid].title       = csvTitle;
+    if (csvDesc  !== null && changes.includes('Description')) editedVideos[vid].description = csvDesc;
+    if (csvTags  !== null && changes.includes('Tags'))        editedVideos[vid].tags        = csvTags;
+
+    // Update the rendered row if it is currently visible
+    const row = document.querySelector(`tr[data-vid="${vid}"]`);
+    if (row) {
+      const tf  = row.querySelector(`textarea[data-field="title"]`);
+      const df  = row.querySelector(`textarea[data-field="description"]`);
+      const tgf = row.querySelector(`textarea[data-field="tags"]`);
+
+      if (tf  && changes.includes('Title'))       { tf.value  = csvTitle; tf.dispatchEvent(new Event('input')); }
+      if (df  && changes.includes('Description')) { df.value  = csvDesc;  df.dispatchEvent(new Event('input')); }
+      if (tgf && changes.includes('Tags'))        { tgf.value = csvTags;  tgf.dispatchEvent(new Event('input')); }
+    }
+    applied++;
+  });
+
+  $('importModal').classList.add('hidden');
+  applyFiltersAndRender();
+  showToast(`${applied} video${applied > 1 ? 's' : ''} loaded from CSV — review and save`, 'success');
+  importParsed = [];
+});
 
 // ── Feedback form ─────────────────────────────────────────────
 // Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor

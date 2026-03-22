@@ -571,6 +571,71 @@
     .footer-stack a:hover { color: var(--accent); text-decoration: underline; }
     .powered-by-link { display: inline-flex; align-items: center; gap: 4px; color: var(--text2) !important; font-size: 11px; }
 
+    .version-badge {
+      font-size: 10px; font-weight: 600; color: var(--text3);
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 4px; padding: 1px 6px; margin-left: 6px;
+      vertical-align: middle; letter-spacing: .02em;
+    }
+
+    /* ══ IMPORT MODAL ════════════════════════════════════════ */
+    /* Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.45);
+      z-index: 1000; display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .modal-overlay.hidden { display: none; }
+    .modal {
+      background: var(--surface); border-radius: 10px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.2);
+      width: 100%; max-width: 720px; max-height: 80vh;
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    .modal-header {
+      padding: 18px 24px 14px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-header h2 { font-size: 16px; font-weight: 600; }
+    .modal-close {
+      width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+      border: none; background: none; cursor: pointer; color: var(--text3); font-size: 18px;
+      border-radius: 4px;
+    }
+    .modal-close:hover { background: var(--surface2); color: var(--text); }
+    .modal-body { padding: 16px 24px; overflow-y: auto; flex: 1; }
+    .modal-footer {
+      padding: 14px 24px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .import-summary {
+      font-size: 13px; color: var(--text2); padding: 10px 14px;
+      background: var(--surface2); border-radius: 6px; margin-bottom: 14px;
+      display: flex; gap: 20px; flex-wrap: wrap;
+    }
+    .import-summary span { display: flex; align-items: center; gap: 5px; }
+    .import-summary .ok   { color: var(--green); font-weight: 600; }
+    .import-summary .warn { color: #f59e0b; font-weight: 600; }
+    .import-summary .err  { color: var(--red); font-weight: 600; }
+    .import-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .import-table th {
+      text-align: left; padding: 7px 10px; font-size: 10px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: .06em; color: var(--text3);
+      border-bottom: 1px solid var(--border); background: var(--surface2);
+      position: sticky; top: 0;
+    }
+    .import-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .import-table tr.row-ok   td { background: #f0fdf4; }
+    .import-table tr.row-skip td { background: #fffbeb; }
+    .import-table tr.row-err  td { background: #fef2f2; }
+    .import-badge {
+      font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 3px;
+    }
+    .import-badge.ok   { background: var(--green-lt); color: var(--green); }
+    .import-badge.skip { background: #fef3c7; color: #92400e; }
+    .import-badge.err  { background: var(--red-lt); color: var(--red); }
+    .import-note { font-size: 11px; color: var(--text3); }
+
     /* ══ TOAST ═══════════════════════════════════════════════ */
     /* Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor */
     .toast {
@@ -606,6 +671,7 @@
     <a class="logo" href="https://chiragmehta.info/youtube-bulk-editor">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="#cc0000"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>
       YouTube <span class="logo-accent">Bulk</span> Editor
+      <span id="appVersionBadge" class="version-badge">v2.1.0</span>
     </a>
     <div id="channelBadge" class="channel-badge hidden">
       <span class="badge-dot"></span>
@@ -626,6 +692,11 @@
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       Export CSV
     </button>
+    <button id="btnImport" class="btn btn-ghost hidden">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Import CSV
+    </button>
+    <input type="file" id="csvFileInput" accept=".csv" style="display:none">
     <button id="btnSaveAll" class="btn btn-primary hidden">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
       Save All
@@ -979,7 +1050,7 @@
         <a href="https://chiragmehta.info" target="_blank">Chirag Mehta</a> &nbsp;·&nbsp;
         <a href="https://twitter.com/imchikachirag" target="_blank">@imchikachirag</a>
       </p>
-      <p style="font-size:11px;color:var(--text3)">Copyright 2026 Chirag Mehta. MIT License.</p>
+      <p style="font-size:11px;color:var(--text3)">Copyright 2026 Chirag Mehta. MIT License. &nbsp;·&nbsp; <span id="footerVersion">v2.1.0</span></p>
     </div>
 
   </div>
@@ -990,6 +1061,41 @@
 
 <!-- ══ MAIN SCRIPT ════════════════════════════════════════════ -->
 <!-- Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor -->
+<!-- ══ IMPORT CSV MODAL ══════════════════════════════════════ -->
+<!-- Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor -->
+<div id="importModal" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Import CSV Preview</h2>
+      <button class="modal-close" id="btnCloseImport">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="import-summary" id="importSummary"></div>
+      <p style="font-size:12px;color:var(--text3);margin-bottom:10px">
+        Review changes below. Only rows marked <strong>Will Update</strong> will be loaded into the editor. Video IDs not found in your currently loaded channel will be skipped.
+      </p>
+      <table class="import-table">
+        <thead>
+          <tr>
+            <th style="width:48px">Status</th>
+            <th style="width:110px">Video ID</th>
+            <th style="width:220px">Title</th>
+            <th>Fields Changing</th>
+          </tr>
+        </thead>
+        <tbody id="importTableBody"></tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <span class="import-note" id="importFooterNote"></span>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-ghost" id="btnCancelImport">Cancel</button>
+        <button class="btn btn-primary" id="btnConfirmImport">Load into Editor</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="editor.js"></script>
 </body>
 </html>
