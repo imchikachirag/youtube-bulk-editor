@@ -742,29 +742,36 @@ $('csvFileInput').addEventListener('change', e => {
 function parseAndPreviewCSV(raw) {
   // Strip BOM if present
   const text = raw.replace(/^\uFEFF/, '');
-  const lines = text.split(/\r?\n/).filter(l => l.trim());
-  if (lines.length < 2) { showToast('CSV appears empty', 'error'); return; }
 
-  // Parse CSV rows respecting quoted fields with commas inside
-  function parseCSVLine(line) {
-    const result = [];
-    let cur = '', inQuote = false;
-    for (let i = 0; i < line.length; i++) {
-      const ch = line[i];
+  // Parse entire CSV respecting quoted fields that span multiple lines
+  function parseCSV(str) {
+    const rows = [];
+    let cur = [], field = '', inQuote = false;
+    for (let i = 0; i < str.length; i++) {
+      const ch = str[i];
       if (ch === '"') {
-        if (inQuote && line[i+1] === '"') { cur += '"'; i++; }
+        if (inQuote && str[i+1] === '"') { field += '"'; i++; }
         else inQuote = !inQuote;
       } else if (ch === ',' && !inQuote) {
-        result.push(cur); cur = '';
+        cur.push(field); field = '';
+      } else if ((ch === '\n' || (ch === '\r' && str[i+1] === '\n')) && !inQuote) {
+        if (ch === '\r') i++; // skip \n after \r
+        cur.push(field); field = '';
+        if (cur.some(c => c !== '') || rows.length > 0) rows.push(cur);
+        cur = [];
       } else {
-        cur += ch;
+        field += ch;
       }
     }
-    result.push(cur);
-    return result;
+    // Last field/row
+    if (field || cur.length) { cur.push(field); if (cur.some(c => c !== '')) rows.push(cur); }
+    return rows;
   }
 
-  const headers = parseCSVLine(lines[0]).map(h => h.trim().toLowerCase());
+  const allRows = parseCSV(text);
+  if (allRows.length < 2) { showToast('CSV appears empty', 'error'); return; }
+
+  const headers = allRows[0].map(h => h.trim().toLowerCase());
   const idCol    = headers.indexOf('video id');
   const titleCol = headers.indexOf('title');
   const descCol  = headers.indexOf('description');
@@ -780,8 +787,8 @@ function parseAndPreviewCSV(raw) {
   const tableRows = [];
   let countOk = 0, countSkip = 0, countErr = 0;
 
-  for (let i = 1; i < lines.length; i++) {
-    const cols  = parseCSVLine(lines[i]);
+  for (let i = 1; i < allRows.length; i++) {
+    const cols  = allRows[i];
     const vid   = (cols[idCol] || '').trim();
     if (!vid) continue;
 
@@ -819,7 +826,7 @@ function parseAndPreviewCSV(raw) {
     <span><span class="ok">${countOk}</span> will update</span>
     <span><span class="warn">${countSkip}</span> no changes</span>
     <span><span class="err">${countErr}</span> not found in channel</span>
-    <span style="color:var(--text3)">${lines.length - 1} rows in file</span>`;
+    <span style="color:var(--text3)">${allRows.length - 1} rows in file</span>`;
 
   // Render table
   const tbody = $('importTableBody');
