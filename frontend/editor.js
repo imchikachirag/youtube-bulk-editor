@@ -630,6 +630,11 @@ $('btnRefresh').addEventListener('click', async () => {
   if (!accessToken) { showToast('Not signed in', 'error'); return; }
   editedVideos = {};
   savedRows    = new Set();
+  // Reset filter to All so table doesn't appear blank after refresh
+  filterMode = 'all';
+  const filterSel = $('filterSelect');
+  if (filterSel) filterSel.value = 'all';
+  currentPage = 1;
   setLoading('Refreshing...');
   try {
     const data     = await ytFetch('/channels?part=snippet,contentDetails&mine=true&maxResults=50');
