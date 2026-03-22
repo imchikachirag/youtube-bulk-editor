@@ -216,7 +216,7 @@
     /* ══ SIGN IN CARD ════════════════════════════════════════ */
     /* Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor */
     .screen-signin {
-      display: flex; align-items: center; justify-content: center;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
       min-height: 100vh; padding: 100px 24px 40px;
     }
     .signin-card {
@@ -224,6 +224,7 @@
       border-radius: 12px; padding: 48px 40px;
       max-width: 520px; width: 100%; text-align: center;
       box-shadow: 0 2px 8px rgba(0,0,0,.06);
+      flex-shrink: 0;
     }
     .signin-card h1 { font-size: 24px; font-weight: 600; margin-bottom: 10px; }
     .signin-card .sub { color: var(--text2); line-height: 1.7; margin-bottom: 28px; font-size: 14px; }
@@ -756,7 +757,7 @@
   </div>
 
   <!-- Footer visible before sign in -->
-  <div class="site-footer" style="margin-top:40px">
+  <div class="site-footer" style="margin-top:48px; width:100%; max-width:860px;">
     <div class="footer-links">
       <a href="https://twitter.com/imchikachirag" target="_blank">Twitter @imchikachirag</a>
       <a href="https://github.com/imchikachirag/youtube-bulk-editor" target="_blank">GitHub — Open Source</a>
