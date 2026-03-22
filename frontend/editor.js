@@ -17,7 +17,7 @@
 
 // ── Config ───────────────────────────────────────────────────
 // Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
-const APP_VERSION = '2.1.0';
+const APP_VERSION = '2.2.0';
 const BACKEND_URL = window.YT_EDITOR_CONFIG?.backendUrl || 'https://youtube-bulk-editor-api-48045104741.asia-south1.run.app';
 const YT_BASE     = 'https://www.googleapis.com/youtube/v3';
 
@@ -797,9 +797,9 @@ function parseAndPreviewCSV(raw) {
     const vid   = (cols[idCol] || '').trim();
     if (!vid) continue;
 
-    const csvTitle = titleCol > -1 ? (cols[titleCol] || '').trim() : null;
-    const csvDesc  = descCol  > -1 ? (cols[descCol]  || '').trim() : null;
-    const csvTags  = tagsCol  > -1 ? (cols[tagsCol]  || '').trim() : null;
+    const csvTitle = titleCol > -1 ? (cols[titleCol] || '').trim() || null : null;
+    const csvDesc  = descCol  > -1 ? (cols[descCol]  || '').trim() || null : null;
+    const csvTags  = tagsCol  > -1 ? (cols[tagsCol]  || '').trim() || null : null;
 
     const existing = loadedMap[vid];
 
@@ -858,28 +858,37 @@ $('btnCancelImport').addEventListener('click', () => $('importModal').classList.
 
 $('btnConfirmImport').addEventListener('click', () => {
   if (!importParsed.length) return;
+
+  const applyTitle = $('importApplyTitle')?.checked !== false;
+  const applyDesc  = $('importApplyDesc')?.checked  !== false;
+  const applyTags  = $('importApplyTags')?.checked  !== false;
+
   let applied = 0;
 
   importParsed.forEach(({ vid, csvTitle, csvDesc, csvTags, changes }) => {
     const existing = allVideos.find(v => v.id === vid);
     if (!existing) return;
-    const sn = existing.snippet || {};
 
     if (!editedVideos[vid]) editedVideos[vid] = {};
-    if (csvTitle !== null && changes.includes('Title'))       editedVideos[vid].title       = csvTitle;
-    if (csvDesc  !== null && changes.includes('Description')) editedVideos[vid].description = csvDesc;
-    if (csvTags  !== null && changes.includes('Tags'))        editedVideos[vid].tags        = csvTags;
+    if (applyTitle && csvTitle !== null && changes.includes('Title'))       editedVideos[vid].title       = csvTitle;
+    if (applyDesc  && csvDesc  !== null && changes.includes('Description')) editedVideos[vid].description = csvDesc;
+    if (applyTags  && csvTags  !== null && changes.includes('Tags'))        editedVideos[vid].tags        = csvTags;
 
-    // Update the rendered row if it is currently visible
+    // Check if anything was actually applied
+    if (Object.keys(editedVideos[vid]).length === 0) {
+      delete editedVideos[vid];
+      return;
+    }
+
+    // Update the rendered row if visible
     const row = document.querySelector(`tr[data-vid="${vid}"]`);
     if (row) {
       const tf  = row.querySelector(`textarea[data-field="title"]`);
       const df  = row.querySelector(`textarea[data-field="description"]`);
       const tgf = row.querySelector(`textarea[data-field="tags"]`);
-
-      if (tf  && changes.includes('Title'))       { tf.value  = csvTitle; tf.dispatchEvent(new Event('input')); }
-      if (df  && changes.includes('Description')) { df.value  = csvDesc;  df.dispatchEvent(new Event('input')); }
-      if (tgf && changes.includes('Tags'))        { tgf.value = csvTags;  tgf.dispatchEvent(new Event('input')); }
+      if (tf  && applyTitle && changes.includes('Title'))       { tf.value  = csvTitle; tf.dispatchEvent(new Event('input')); }
+      if (df  && applyDesc  && changes.includes('Description')) { df.value  = csvDesc;  df.dispatchEvent(new Event('input')); }
+      if (tgf && applyTags  && changes.includes('Tags'))        { tgf.value = csvTags;  tgf.dispatchEvent(new Event('input')); }
     }
     applied++;
   });

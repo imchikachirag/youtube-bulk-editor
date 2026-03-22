@@ -672,7 +672,7 @@
     <a class="logo" href="https://chiragmehta.info/youtube-bulk-editor">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="#cc0000"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>
       YouTube <span class="logo-accent">Bulk</span> Editor
-      <span id="appVersionBadge" class="version-badge">v2.1.0</span>
+      <span id="appVersionBadge" class="version-badge">v2.2.0</span>
     </a>
     <div id="channelBadge" class="channel-badge hidden">
       <span class="badge-dot"></span>
@@ -795,7 +795,7 @@
       <a href="https://chiragmehta.info" target="_blank">Chirag Mehta</a> &nbsp;·&nbsp;
       <a href="https://twitter.com/imchikachirag" target="_blank">@imchikachirag</a>
     </p>
-    <p style="font-size:11px;color:var(--text3)">Copyright 2026 Chirag Mehta. MIT License. &nbsp;·&nbsp; <span id="footerVersionSignin">v2.1.0</span></p>
+    <p style="font-size:11px;color:var(--text3)">Copyright 2026 Chirag Mehta. MIT License. &nbsp;·&nbsp; <span id="footerVersionSignin">v2.2.0</span></p>
   </div>
 
 </div>
@@ -1094,7 +1094,7 @@
         <a href="https://chiragmehta.info" target="_blank">Chirag Mehta</a> &nbsp;·&nbsp;
         <a href="https://twitter.com/imchikachirag" target="_blank">@imchikachirag</a>
       </p>
-      <p style="font-size:11px;color:var(--text3)">Copyright 2026 Chirag Mehta. MIT License. &nbsp;·&nbsp; <span id="footerVersion">v2.1.0</span></p>
+      <p style="font-size:11px;color:var(--text3)">Copyright 2026 Chirag Mehta. MIT License. &nbsp;·&nbsp; <span id="footerVersion">v2.2.0</span></p>
     </div>
 
   </div>
@@ -1115,6 +1115,19 @@
     </div>
     <div class="modal-body">
       <div class="import-summary" id="importSummary"></div>
+      <div style="display:flex;gap:20px;align-items:center;margin-bottom:12px;padding:10px 14px;background:var(--accent-lt);border-radius:6px;border:1px solid #c8d8f8">
+        <span style="font-size:12px;font-weight:600;color:var(--accent)">Apply fields:</span>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer">
+          <input type="checkbox" id="importApplyTitle" checked> Title
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer">
+          <input type="checkbox" id="importApplyDesc" checked> Description
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer">
+          <input type="checkbox" id="importApplyTags" checked> Tags
+        </label>
+        <span style="font-size:11px;color:var(--text3);margin-left:4px">Uncheck to skip updating that field even if CSV has a value</span>
+      </div>
       <p style="font-size:12px;color:var(--text3);margin-bottom:10px">
         Review changes below. Only rows marked <strong>Will Update</strong> will be loaded into the editor. Video IDs not found in your currently loaded channel will be skipped.
       </p>
