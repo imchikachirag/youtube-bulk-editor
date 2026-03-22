@@ -66,6 +66,8 @@ window.addEventListener('DOMContentLoaded', () => {
   if (vBadge) vBadge.textContent = `v${APP_VERSION}`;
   const vFooter = $('footerVersion');
   if (vFooter) vFooter.textContent = `v${APP_VERSION}`;
+  const vFooterSignin = $('footerVersionSignin');
+  if (vFooterSignin) vFooterSignin.textContent = `v${APP_VERSION}`;
 
   const params    = new URLSearchParams(window.location.search);
   const hashToken = new URLSearchParams(window.location.hash.slice(1)).get('token');
