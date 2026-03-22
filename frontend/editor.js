@@ -873,8 +873,15 @@ $('btnConfirmImport').addEventListener('click', () => {
   });
 
   $('importModal').classList.add('hidden');
+
+  // Switch filter to show only imported/changed rows
+  filterMode = 'changed';
+  const filterSel = $('filterSelect');
+  if (filterSel) filterSel.value = 'changed';
+  currentPage = 1;
+
   applyFiltersAndRender();
-  showToast(`${applied} video${applied > 1 ? 's' : ''} loaded from CSV — review and save`, 'success');
+  showToast(`${applied} video${applied > 1 ? 's' : ''} loaded — review edits and save`, 'success');
   importParsed = [];
 });
 
