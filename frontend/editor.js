@@ -1,11 +1,11 @@
 // ============================================================
-// YouTube Bulk Editor — Frontend Logic
+// YouTube Bulk Editor  -  Frontend Logic
 // github.com/imchikachirag/youtube-bulk-editor
 //
 // Copyright (c) 2026 Chirag Mehta
 // https://chiragmehta.info | @imchikachirag
 //
-// MIT License — free to use, modify, and distribute
+// MIT License  -  free to use, modify, and distribute
 //
 // PRIVACY NOTE: This file makes all YouTube API calls directly
 // from the browser to YouTube. The backend server (Google Cloud
@@ -16,13 +16,13 @@
 'use strict';
 
 // ── Config ───────────────────────────────────────────────────
-// Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
+// Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
 const APP_VERSION = '2.1.0';
 const BACKEND_URL = window.YT_EDITOR_CONFIG?.backendUrl || 'https://youtube-bulk-editor-api-48045104741.asia-south1.run.app';
 const YT_BASE     = 'https://www.googleapis.com/youtube/v3';
 
 // ── DOM refs ─────────────────────────────────────────────────
-// Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
+// Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
 const $ = id => document.getElementById(id);
 const screens = {
   signIn:  $('screenSignIn'),
@@ -32,7 +32,7 @@ const screens = {
 };
 
 // ── State ─────────────────────────────────────────────────────
-// Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
+// Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
 let accessToken  = null;
 let allVideos    = [];
 let filteredVids = [];
@@ -55,8 +55,8 @@ function setLoading(msg, count = '') {
   showScreen('loading');
 }
 
-// ── Init — check URL hash for token from backend ─────────────
-// Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
+// ── Init  -  check URL hash for token from backend ─────────────
+// Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
 // The token arrives in the URL hash (#token=...) after OAuth.
 // Hash fragments are never sent to servers or written to logs.
 // We read it once, store in sessionStorage, then clean the URL.
@@ -83,7 +83,7 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   if (hashToken) {
-    // Store token in sessionStorage — cleared when tab closes
+    // Store token in sessionStorage  -  cleared when tab closes
     sessionStorage.setItem('yt_editor_token', decodeURIComponent(hashToken));
     // Clean URL so token is not visible or bookmarkable
     history.replaceState(null, '', window.location.pathname);
@@ -98,14 +98,14 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// ── Sign in — redirect to backend OAuth endpoint ─────────────
-// Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
+// ── Sign in  -  redirect to backend OAuth endpoint ─────────────
+// Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
 $('btnSignIn').addEventListener('click', () => {
   window.location.href = `${BACKEND_URL}/auth/login`;
 });
 
 // ── Switch Channel ────────────────────────────────────────────
-// Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
+// Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
 $('btnSwitchChannel').addEventListener('click', () => {
   if (cachedChannels.length > 1) {
     renderChannelPicker(cachedChannels);
@@ -113,8 +113,8 @@ $('btnSwitchChannel').addEventListener('click', () => {
   }
 });
 
-// ── Sign out — revoke token at Google ────────────────────────
-// Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
+// ── Sign out  -  revoke token at Google ────────────────────────
+// Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
 $('btnSignOut').addEventListener('click', async () => {
   if (accessToken) {
     // Best-effort token revocation at Google
@@ -134,7 +134,7 @@ $('btnSignOut').addEventListener('click', async () => {
 });
 
 // ── Authenticated YouTube API fetch ──────────────────────────
-// Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
+// Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
 // All calls go directly from this browser to YouTube.
 // The backend server is never involved in these requests.
 async function ytFetch(path) {
@@ -171,7 +171,7 @@ async function ytUpdate(videoId, snippet) {
 }
 
 // ── Load channels ─────────────────────────────────────────────
-// Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
+// Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
 let cachedChannels = [];
 
 async function loadChannels() {
@@ -198,7 +198,7 @@ async function loadChannels() {
 }
 
 // ── Channel picker ────────────────────────────────────────────
-// Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
+// Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
 function renderChannelPicker(channels) {
   const list = $('channelList');
   list.innerHTML = '';
@@ -218,7 +218,7 @@ function renderChannelPicker(channels) {
 }
 
 // ── Load all videos ───────────────────────────────────────────
-// Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
+// Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
 async function loadVideos(channel) {
   setLoading('Loading your videos...');
   try {
@@ -271,7 +271,7 @@ async function loadVideos(channel) {
 }
 
 // ── Filter, sort, paginate, render ───────────────────────────
-// Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
+// Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
 function applyFiltersAndRender() {
   const q = searchQuery.toLowerCase();
 
@@ -304,7 +304,7 @@ function applyFiltersAndRender() {
 }
 
 // ── Render one page of rows ───────────────────────────────────
-// Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
+// Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
 function renderPage() {
   const tbody = $('videoTableBody');
   tbody.innerHTML = '';
@@ -405,7 +405,7 @@ function autoResizeAll() {
 }
 
 // ── Pagination ────────────────────────────────────────────────
-// Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
+// Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
 function renderPagination() {
   const total      = filteredVids.length;
   const totalPages = Math.max(1, Math.ceil(total / perPage));
@@ -457,7 +457,7 @@ function updateVideoCount() {
 }
 
 // ── Field input handler ───────────────────────────────────────
-// Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
+// Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
 function onFieldInput(e) {
   const el    = e.target;
   const vid   = el.dataset.vid;
@@ -506,7 +506,7 @@ function updateCharCount(el, len, max) {
 }
 
 // ── Save row ──────────────────────────────────────────────────
-// Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
+// Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
 async function saveRow(vid) {
   const orig = allVideos.find(v => v.id === vid);
   if (!orig) return;
@@ -554,7 +554,7 @@ async function saveRow(vid) {
 }
 
 // ── Revert row ────────────────────────────────────────────────
-// Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
+// Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
 function revertRow(vid) {
   const orig = allVideos.find(v => v.id === vid);
   if (!orig) return;
@@ -583,7 +583,7 @@ function revertRow(vid) {
 }
 
 // ── Save all ──────────────────────────────────────────────────
-// Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
+// Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
 $('btnSaveAll').addEventListener('click', async () => {
   const ids = Object.keys(editedVideos);
   if (!ids.length) { showToast('No changes to save', 'error'); return; }
@@ -604,7 +604,7 @@ $('btnSaveAll').addEventListener('click', async () => {
 });
 
 // ── Toolbar events ────────────────────────────────────────────
-// Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
+// Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
 $('searchInput').addEventListener('input', e => { searchQuery = e.target.value; currentPage = 1; applyFiltersAndRender(); });
 $('sortSelect').addEventListener('change', e => { sortMode = e.target.value; currentPage = 1; applyFiltersAndRender(); });
 $('filterSelect').addEventListener('change', e => { filterMode = e.target.value; currentPage = 1; applyFiltersAndRender(); });
@@ -625,7 +625,7 @@ if (topPP) topPP.addEventListener('change', e => {
 });
 
 // ── Refresh ───────────────────────────────────────────────────
-// Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
+// Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
 $('btnRefresh').addEventListener('click', async () => {
   if (!accessToken) { showToast('Not signed in', 'error'); return; }
   editedVideos = {};
@@ -641,7 +641,7 @@ $('btnRefresh').addEventListener('click', async () => {
 });
 
 // ── Export CSV ────────────────────────────────────────────────
-// Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
+// Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
 $('btnDownload').addEventListener('click', () => {
   if (!allVideos.length) return;
 
@@ -718,7 +718,7 @@ $('btnDownload').addEventListener('click', () => {
 function csvCell(val) { return `"${String(val).replace(/"/g,'""')}"`; }
 
 // ── Import CSV ────────────────────────────────────────────────
-// Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
+// Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
 // Accepts the same CSV format as Export CSV.
 // Parses the file, matches video IDs against currently loaded videos,
 // shows a preview modal, then loads changes into the editor on confirm.
@@ -888,12 +888,12 @@ $('btnConfirmImport').addEventListener('click', () => {
   currentPage = 1;
 
   applyFiltersAndRender();
-  showToast(`${applied} video${applied > 1 ? 's' : ''} loaded — review edits and save`, 'success');
+  showToast(`${applied} video${applied > 1 ? 's' : ''} loaded  -  review edits and save`, 'success');
   importParsed = [];
 });
 
 // ── Feedback form ─────────────────────────────────────────────
-// Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
+// Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
 $('btnSendFeedback').addEventListener('click', () => {
   const name    = $('fbName')?.value.trim()    || 'Anonymous';
   const channel = $('fbChannel')?.value.trim() || '';
@@ -910,7 +910,7 @@ $('btnSendFeedback').addEventListener('click', () => {
 });
 
 // ── Toast ─────────────────────────────────────────────────────
-// Copyright (c) 2026 Chirag Mehta — github.com/imchikachirag/youtube-bulk-editor
+// Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
 let _tt;
 function showToast(msg, type = '') {
   const t = $('toast');
