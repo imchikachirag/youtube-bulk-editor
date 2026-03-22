@@ -21,6 +21,38 @@ const APP_VERSION = '2.2.0';
 const BACKEND_URL = window.YT_EDITOR_CONFIG?.backendUrl || 'https://youtube-bulk-editor-api-48045104741.asia-south1.run.app';
 const YT_BASE     = 'https://www.googleapis.com/youtube/v3';
 
+// ── Dark Theme ───────────────────────────────────────────────
+// Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
+(function initTheme() {
+  const saved = localStorage.getItem('yt_editor_theme');
+  // If no saved preference, follow system preference
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if (saved === 'dark' || (!saved && prefersDark)) {
+    document.body.classList.add('dark');
+  }
+  updateThemeIcon();
+})();
+
+function updateThemeIcon() {
+  const isDark = document.body.classList.contains('dark');
+  const sun  = document.getElementById('iconSun');
+  const moon = document.getElementById('iconMoon');
+  if (sun)  sun.style.display  = isDark ? 'block' : 'none';
+  if (moon) moon.style.display = isDark ? 'none'  : 'block';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('btnTheme');
+  if (btn) {
+    btn.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      const isDark = document.body.classList.contains('dark');
+      localStorage.setItem('yt_editor_theme', isDark ? 'dark' : 'light');
+      updateThemeIcon();
+    });
+  }
+});
+
 // ── DOM refs ─────────────────────────────────────────────────
 // Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
 const $ = id => document.getElementById(id);
@@ -137,6 +169,18 @@ $('btnSignOut').addEventListener('click', async () => {
 // Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
 // All calls go directly from this browser to YouTube.
 // The backend server is never involved in these requests.
+function parseYTError(err) {
+  // Strip any HTML tags from error messages (e.g. YouTube quota error contains <a> tags)
+  const raw = (typeof err === 'string' ? err : err?.message || 'Unknown error');
+  const stripped = raw.replace(/<[^>]*>/g, '').trim();
+
+  // Detect quota exceeded
+  if (stripped.toLowerCase().includes('quota') || stripped.toLowerCase().includes('exceeded')) {
+    return { msg: 'Daily YouTube API quota exceeded. Resets at 12:30 PM IST tomorrow.', type: 'quota' };
+  }
+  return { msg: stripped, type: 'error' };
+}
+
 async function ytFetch(path) {
   const res = await fetch(`${YT_BASE}${path}`, {
     headers: { 'Authorization': `Bearer ${accessToken}` }
@@ -149,7 +193,10 @@ async function ytFetch(path) {
   }
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.error?.message || `HTTP ${res.status}`);
+    const raw = err.error?.message || `HTTP ${res.status}`;
+    const { msg, type } = parseYTError(raw);
+    if (type === 'quota') showToast(msg, 'warning');
+    throw new Error(msg);
   }
   return res.status === 204 ? null : res.json();
 }
@@ -165,7 +212,10 @@ async function ytUpdate(videoId, snippet) {
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.error?.message || `HTTP ${res.status}`);
+    const raw = err.error?.message || `HTTP ${res.status}`;
+    const { msg, type } = parseYTError(raw);
+    if (type === 'quota') showToast(msg, 'warning');
+    throw new Error(msg);
   }
   return res.json();
 }
@@ -932,5 +982,7 @@ function showToast(msg, type = '') {
   t.className   = 'toast' + (type ? ` ${type}` : '');
   t.classList.remove('hidden');
   clearTimeout(_tt);
-  _tt = setTimeout(() => t.classList.add('hidden'), 3500);
+  // Quota/warning messages stay longer so user can read them
+  const duration = (type === 'warning') ? 8000 : 3500;
+  _tt = setTimeout(() => t.classList.add('hidden'), duration);
 }
