@@ -146,8 +146,14 @@
     body.dark tr:hover td { background: var(--surface3) !important; }
     body.dark .import-summary { background: var(--surface2); border-color: var(--border); }
     /* Table row alternating */
-    body.dark .video-row:nth-child(even) { background: #1a1a1a; }
-    body.dark .video-row:hover { background: #252525 !important; }
+    body.dark .video-row:nth-child(even) { background: #181818; }
+    body.dark .video-row:hover           { background: #2a2a2a !important; }
+    body.dark .video-row.changed         { background: #2a2200 !important; }
+    body.dark .video-row.changed:hover   { background: #332a00 !important; }
+    body.dark .video-row.saved           { background: #0a2a15 !important; }
+    body.dark .video-row.saved:hover     { background: #0d331a !important; }
+    body.dark .video-row.error           { background: #2a0f0f !important; }
+    body.dark .video-row.error:hover     { background: #331414 !important; }
     /* Toolbar / save bar */
     body.dark .save-bar { background: #1a2a3a; border-color: #1e3a5a; }
     body.dark .save-progress { background: #1e3a5a; }

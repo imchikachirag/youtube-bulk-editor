@@ -595,11 +595,12 @@ async function saveRow(vid) {
     }
     if (status) status.innerHTML = '<span class="status-saved">Saved</span>';
     updateVideoCount();
-    showToast('Saved!', 'success');
+    if (!isBulkSaving) showToast('Saved!', 'success');
   } catch (e) {
     if (row) row.classList.add('error');
     if (status) status.innerHTML = '<span class="status-error">Error</span>';
-    showToast(`Save failed: ${e.message}`, 'error');
+    if (!isBulkSaving) showToast(`Save failed: ${e.message}`, 'error');
+    throw e; // re-throw so Save All can count it
   }
 }
 
@@ -640,17 +641,35 @@ $('btnSaveAll').addEventListener('click', async () => {
   const bar = $('saveBar'), msg = $('saveBarMsg'), prog = $('saveProgress');
   bar.classList.remove('hidden');
   $('btnSaveAll').disabled = true;
-  let done = 0;
+  isBulkSaving = true;
+  let done = 0, failed = 0;
   for (const id of ids) {
-    msg.textContent = `Saving ${done+1} of ${ids.length}...`;
-    prog.innerHTML  = `<div class="save-progress-inner" style="width:${Math.round(done/ids.length*100)}%"></div>`;
-    await saveRow(id);
-    done++;
+    msg.textContent = `Saving ${done + failed + 1} of ${ids.length}...`;
+    prog.innerHTML  = `<div class="save-progress-inner" style="width:${Math.round((done+failed)/ids.length*100)}%"></div>`;
+    try {
+      await saveRow(id);
+      done++;
+    } catch(e) {
+      failed++;
+    }
+    await new Promise(r => setTimeout(r, 80)); // small delay so progress is visible
   }
-  msg.textContent = `All ${done} videos saved!`;
-  prog.innerHTML  = `<div class="save-progress-inner" style="width:100%"></div>`;
+  prog.innerHTML = `<div class="save-progress-inner" style="width:100%"></div>`;
   $('btnSaveAll').disabled = false;
-  setTimeout(() => bar.classList.add('hidden'), 3000);
+  isBulkSaving = false;
+
+  // Show clear summary
+  if (failed === 0) {
+    msg.textContent = `All ${done} video${done > 1 ? 's' : ''} saved successfully!`;
+    showToast(`${done} video${done > 1 ? 's' : ''} saved successfully!`, 'success');
+  } else if (done === 0) {
+    msg.textContent = `All ${failed} saves failed. Check your connection or quota.`;
+    showToast(`All ${failed} saves failed. Quota exceeded or connection error.`, 'warning');
+  } else {
+    msg.textContent = `${done} saved, ${failed} failed. Scroll to see red rows.`;
+    showToast(`${done} saved, ${failed} failed — check red rows below.`, 'warning');
+  }
+  setTimeout(() => bar.classList.add('hidden'), failed > 0 ? 6000 : 3500);
 });
 
 // ── Toolbar events ────────────────────────────────────────────
@@ -778,7 +797,7 @@ function csvCell(val) { return `"${String(val).replace(/"/g,'""')}"`; }
 // Parses the file, matches video IDs against currently loaded videos,
 // shows a preview modal, then loads changes into the editor on confirm.
 
-let importParsed = []; // holds parsed rows ready to apply
+let isBulkSaving = false; // suppress per-row toasts during Save All
 
 $('btnImport').addEventListener('click', () => {
   if (!allVideos.length) { showToast('No videos loaded yet', 'error'); return; }
