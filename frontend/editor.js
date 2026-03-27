@@ -95,7 +95,10 @@ function setLoading(msg, count = '') {
 window.addEventListener('DOMContentLoaded', () => {
   // Set version badge from constant
   const vBadge = $('appVersionBadge');
-  if (vBadge) vBadge.textContent = `v${APP_VERSION}`;
+  if (vBadge) {
+    vBadge.textContent = `v${APP_VERSION}`;
+    // href already set in HTML as changelog/?from=app
+  }
   const vFooter = $('footerVersion');
   if (vFooter) vFooter.textContent = `v${APP_VERSION}`;
   const vFooterSignin = $('footerVersionSignin');
@@ -260,7 +263,7 @@ function renderChannelPicker(channels) {
       ${thumb ? `<img src="${thumb}" alt="">` : `<div class="ch-thumb-placeholder"></div>`}
       <div class="ch-info">
         <div class="ch-name">${esc(ch.snippet?.title || ch.id)}</div>
-        <div class="ch-id">${ch.id}</div>
+        <div class="ch-id">${esc(ch.id)}</div>
       </div>`;
     btn.addEventListener('click', () => loadVideos(ch));
     list.appendChild(btn);

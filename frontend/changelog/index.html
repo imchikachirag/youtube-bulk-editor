@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<!--
+  YouTube Bulk Editor - Changelog
+  github.com/imchikachirag/youtube-bulk-editor
+  Copyright (c) 2026 Chirag Mehta
+  MIT License
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Changelog - YouTube Bulk Editor</title>
+  <meta name="description" content="Release notes and changelog for YouTube Bulk Editor by Chirag Mehta.">
+  <link rel="icon" type="image/x-icon" href="../favicon.ico">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #f9f9f9;
+      --surface:   #ffffff;
+      --surface2:  #f2f2f2;
+      --surface3:  #e8e8e8;
+      --border:    #e0e0e0;
+      --border2:   #d0d0d0;
+      --text:      #0f0f0f;
+      --text2:     #606060;
+      --text3:     #909090;
+      --accent:    #065fd4;
+      --accent-h:  #0456c0;
+      --accent-lt: #e8f0fd;
+      --red:       #cc0000;
+      --green:     #1a7f3c;
+      --green-lt:  #e6f4ea;
+      --radius:    6px;
+      --font:      'Segoe UI', 'Google Sans', system-ui, -apple-system, sans-serif;
+      --header-h:  56px;
+    }
+
+    body.dark {
+      --bg:        #0f0f0f;
+      --surface:   #212121;
+      --surface2:  #272727;
+      --surface3:  #3d3d3d;
+      --border:    #3d3d3d;
+      --border2:   #4d4d4d;
+      --text:      #f1f1f1;
+      --text2:     #aaaaaa;
+      --text3:     #717171;
+      --accent:    #3ea6ff;
+      --accent-h:  #65b8ff;
+      --accent-lt: #1a2a3a;
+      --red:       #ff4444;
+      --green:     #2ecc71;
+      --green-lt:  #0d2b1a;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 14px;
+      transition: background 0.25s, color 0.25s;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      height: var(--header-h);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 1px 3px rgba(0,0,0,.08);
+      gap: 16px;
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .header-right { display: flex; align-items: center; gap: 10px; }
+
+    .logo { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 16px; color: var(--text); text-decoration: none; }
+    .logo svg { color: #cc0000; }
+    .logo-accent { color: #cc0000; }
+    .page-title { font-size: 14px; color: var(--text2); font-weight: 400; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 14px; border-radius: var(--radius);
+      font-size: 13px; font-weight: 500; cursor: pointer;
+      border: 1px solid var(--border); background: var(--surface2);
+      color: var(--text2); text-decoration: none; transition: all 0.15s;
+    }
+    .btn:hover { background: var(--surface3); color: var(--text); }
+    .btn-primary {
+      background: var(--accent); color: #fff; border-color: var(--accent);
+    }
+    .btn-primary:hover { background: var(--accent-h); border-color: var(--accent-h); color: #fff; }
+
+    .btn-theme {
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 1px solid var(--border); background: var(--surface2);
+      cursor: pointer; color: var(--text2);
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .btn-theme:hover { background: var(--surface3); color: var(--text); }
+
+    /* ── CONTENT ── */
+    .content {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: calc(var(--header-h) + 48px) 24px 80px;
+    }
+
+    .page-hero { margin-bottom: 48px; }
+    .page-hero h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    .page-hero p { color: var(--text2); font-size: 15px; line-height: 1.6; }
+
+    /* ── CTA BANNER ── */
+    .cta-banner {
+      background: var(--accent-lt);
+      border: 1px solid #c8d8f8;
+      border-radius: 10px;
+      padding: 20px 24px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      margin-bottom: 48px;
+    }
+    body.dark .cta-banner { border-color: #2a3a5a; }
+    .cta-banner.hidden { display: none; }
+    .cta-banner-text { font-size: 15px; font-weight: 500; color: var(--accent); }
+    .cta-banner-sub  { font-size: 13px; color: var(--text2); margin-top: 3px; }
+
+    /* ── TIMELINE ── */
+    .timeline { position: relative; }
+    .timeline::before {
+      content: '';
+      position: absolute; left: 16px; top: 8px; bottom: 8px;
+      width: 2px; background: var(--border);
+    }
+
+    .release {
+      position: relative;
+      padding-left: 52px;
+      margin-bottom: 32px;
+    }
+    .release-dot {
+      position: absolute; left: 8px; top: 14px;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--surface); border: 3px solid var(--border2);
+      transition: border-color 0.2s;
+    }
+    .release.latest .release-dot  { border-color: var(--accent); background: var(--accent); }
+    .release.feature .release-dot { border-color: var(--green); }
+    .release.minor .release-dot   { border-color: var(--text3); }
+
+    .release-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: border-color 0.15s;
+    }
+    .release-card:hover { border-color: var(--border2); }
+    .release.latest .release-card { border-color: #c8d8f8; }
+    body.dark .release.latest .release-card { border-color: #2a3a5a; }
+
+    .release-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 14px 18px; cursor: pointer;
+      user-select: none;
+      flex-wrap: nowrap;
+    }
+    .release-header:hover { background: var(--surface2); }
+
+    .release-version {
+      font-size: 16px; font-weight: 700; color: var(--text);
+      white-space: nowrap;
+    }
+    .release-name {
+      font-size: 13px; color: var(--text2);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      flex: 1;
+    }
+    .release-tag {
+      font-size: 11px; font-weight: 600; padding: 2px 8px;
+      border-radius: 20px; white-space: nowrap; flex-shrink: 0;
+    }
+    .tag-latest  { background: var(--accent-lt); color: var(--accent); }
+    .tag-feature { background: var(--green-lt);  color: var(--green); }
+    .tag-minor   { background: var(--surface2);  color: var(--text3); border: 1px solid var(--border); }
+    body.dark .tag-latest  { background: #1a2a3a; }
+    body.dark .tag-feature { background: #0d2b1a; }
+
+    .release-date {
+      font-size: 12px; color: var(--text3);
+      white-space: nowrap; flex-shrink: 0; margin-left: auto;
+    }
+    .release-chevron {
+      flex-shrink: 0; color: var(--text3);
+      transition: transform 0.2s;
+    }
+    .release-card.open .release-chevron { transform: rotate(180deg); }
+
+    .release-body {
+      display: none;
+      padding: 0 18px 18px;
+      border-top: 1px solid var(--border);
+    }
+    .release-card.open .release-body { display: block; }
+
+    .release-summary {
+      font-size: 14px; color: var(--text2);
+      padding: 14px 0 16px;
+      line-height: 1.6;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    .release-section { margin-bottom: 16px; }
+    .release-section:last-child { margin-bottom: 0; }
+    .release-section-title {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--text3);
+      margin-bottom: 8px;
+    }
+    .release-section ul { list-style: none; }
+    .release-section ul li {
+      font-size: 13.5px; color: var(--text);
+      padding: 4px 0 4px 20px;
+      position: relative; line-height: 1.5;
+    }
+    .release-section ul li::before {
+      content: ''; position: absolute; left: 0; top: 11px;
+      width: 6px; height: 6px; border-radius: 50%;
+    }
+    .section-new li::before     { background: var(--accent); }
+    .section-improved li::before { background: var(--green); }
+    .section-hood li::before    { background: var(--text3); }
+
+    /* ── FOOTER ── */
+    .footer {
+      text-align: center;
+      padding: 32px 24px;
+      color: var(--text3);
+      font-size: 12px;
+      border-top: 1px solid var(--border);
+    }
+    .footer a { color: var(--accent); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <a href="../" class="logo">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.27 8.27 0 0 0 4.84 1.55V6.79a4.85 4.85 0 0 1-1.07-.1z"/></svg>
+      <span>YouTube <span class="logo-accent">Bulk</span> Editor</span>
+    </a>
+    <span class="page-title">/ Changelog</span>
+  </div>
+  <div class="header-right">
+    <a href="../" class="btn" id="btnBackToApp">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to App
+    </a>
+    <button class="btn-theme" id="btnTheme" title="Toggle dark mode">
+      <svg id="iconSun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      <svg id="iconMoon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+  </div>
+</header>
+
+<main class="content">
+
+  <div class="page-hero">
+    <h1>Changelog</h1>
+    <p>Every update to YouTube Bulk Editor, explained in plain language. What changed, what got better, and what was fixed.</p>
+  </div>
+
+  <!-- CTA banner — shown only when NOT coming from the app -->
+  <div class="cta-banner" id="ctaBanner">
+    <div>
+      <div class="cta-banner-text">Free tool for YouTube creators</div>
+      <div class="cta-banner-sub">Bulk edit titles, descriptions and tags for all your videos in one place.</div>
+    </div>
+    <a href="../" class="btn btn-primary">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      Open the App
+    </a>
+  </div>
+
+  <div class="timeline">
+
+    <!-- v2.2.0 -->
+    <div class="release latest">
+      <div class="release-dot"></div>
+      <div class="release-card open">
+        <div class="release-header" onclick="toggleRelease(this)">
+          <span class="release-version">v2.2.0</span>
+          <span class="release-name">Dark Mode, Smarter Imports, Better Feedback</span>
+          <span class="release-tag tag-latest">Latest</span>
+          <span class="release-date">Mar 2026</span>
+          <svg class="release-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="release-body">
+          <div class="release-summary">Dark mode, field-level import controls, a proper Save All summary, and cleaner error messages across the board.</div>
+          <div class="release-section section-new">
+            <div class="release-section-title">New</div>
+            <ul>
+              <li>Dark mode - follows your system preference automatically, with a manual toggle in the header. All elements, badges, and row states are fully readable in both themes.</li>
+              <li>Field-level import controls - when importing a CSV, choose exactly which fields to apply: Title, Description, or Tags independently. Unchecked fields are skipped entirely even if the CSV has values for them.</li>
+            </ul>
+          </div>
+          <div class="release-section section-improved">
+            <div class="release-section-title">Improved</div>
+            <ul>
+              <li>Save All now shows a clear summary when complete: how many videos saved successfully, how many failed, and which rows to check. Individual save toasts no longer fire during a bulk operation.</li>
+              <li>Quota exceeded error now shows a friendly amber message with the reset time, instead of raw HTML with broken link tags.</li>
+              <li>Importing a CSV with an empty Description column no longer blanks out existing descriptions. Empty fields in a CSV are now treated as "keep existing".</li>
+              <li>Refreshing the page while in "Changed only" filter mode no longer shows a blank table. Filter resets to All videos automatically on refresh.</li>
+              <li>Row hover is now clearly visible in dark mode across all row states.</li>
+            </ul>
+          </div>
+          <div class="release-section section-hood">
+            <div class="release-section-title">Under the Hood</div>
+            <ul>
+              <li>Save All tracks success and failure counts separately so the final summary is always accurate, even on partial failures.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- v2.1.0 -->
+    <div class="release feature">
+      <div class="release-dot"></div>
+      <div class="release-card">
+        <div class="release-header" onclick="toggleRelease(this)">
+          <span class="release-version">v2.1.0</span>
+          <span class="release-name">Import CSV, Multi-Channel Support</span>
+          <span class="release-tag tag-feature">Feature</span>
+          <span class="release-date">Mar 2026</span>
+          <svg class="release-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="release-body">
+          <div class="release-summary">Import a CSV to push bulk changes in one operation. Multi-channel accounts can now switch between channels without signing out.</div>
+          <div class="release-section section-new">
+            <div class="release-section-title">New</div>
+            <ul>
+              <li>Import CSV - prepare your updates in a spreadsheet, import the file, preview exactly what will change, then load and save in one flow. Works with partial CSVs - only rows with matching Video IDs are updated.</li>
+              <li>Switch Channel button appears automatically when your Google account manages more than one YouTube channel.</li>
+            </ul>
+          </div>
+          <div class="release-section section-improved">
+            <div class="release-section-title">Improved</div>
+            <ul>
+              <li>After loading an import, the table automatically filters to show only the imported rows so you are not scrolling through unchanged videos.</li>
+              <li>Export CSV now includes full video metadata: privacy status, publish date, duration, view count, likes, comments, and more.</li>
+              <li>Footer now visible on the sign-in screen without overlapping the sign-in card.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- v2.0.0 -->
+    <div class="release feature">
+      <div class="release-dot"></div>
+      <div class="release-card">
+        <div class="release-header" onclick="toggleRelease(this)">
+          <span class="release-version">v2.0.0</span>
+          <span class="release-name">Public Launch</span>
+          <span class="release-tag tag-feature">Feature</span>
+          <span class="release-date">Mar 2026</span>
+          <svg class="release-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="release-body">
+          <div class="release-summary">Full public release. Edit titles, descriptions, and tags for all your YouTube videos from a single table.</div>
+          <div class="release-section section-new">
+            <div class="release-section-title">New</div>
+            <ul>
+              <li>Inline editing for titles, descriptions, and tags across all videos on one page. Changed fields highlight yellow and show the original value for reference.</li>
+              <li>Save individual rows or use Save All to push every pending change at once with a live progress bar.</li>
+              <li>Sort by title or publish date. Filter to show all videos, only changed ones, or only saved ones.</li>
+              <li>Pagination with 10, 25, 50, or 100 rows per page.</li>
+              <li>Export CSV for a full backup of all video metadata before making changes.</li>
+              <li>Character counters on description and tags fields.</li>
+              <li>Revert individual rows to original values without refreshing the page.</li>
+              <li>Zero server storage - your OAuth token lives only in your browser tab and is revoked the moment you disconnect.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /timeline -->
+
+</main>
+
+<footer class="footer">
+  <p>
+    YouTube Bulk Editor by <a href="https://chiragmehta.info" target="_blank" rel="noopener">Chirag Mehta</a>
+    &nbsp;·&nbsp;
+    <a href="https://github.com/imchikachirag/youtube-bulk-editor" target="_blank" rel="noopener">Open Source on GitHub</a>
+    &nbsp;·&nbsp;
+    <a href="../privacy/">Privacy Policy</a>
+    &nbsp;·&nbsp;
+    <a href="../">Back to App</a>
+  </p>
+</footer>
+
+<script>
+  // ── Theme ──────────────────────────────────────────────────
+  (function() {
+    const saved = localStorage.getItem('yt_editor_theme');
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (saved === 'dark' || (!saved && prefersDark)) document.body.classList.add('dark');
+    updateIcon();
+  })();
+
+  function updateIcon() {
+    const isDark = document.body.classList.contains('dark');
+    document.getElementById('iconSun').style.display  = isDark ? 'block' : 'none';
+    document.getElementById('iconMoon').style.display = isDark ? 'none'  : 'block';
+  }
+
+  document.getElementById('btnTheme').addEventListener('click', () => {
+    document.body.classList.toggle('dark');
+    localStorage.setItem('yt_editor_theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    updateIcon();
+  });
+
+  // ── CTA logic ──────────────────────────────────────────────
+  // Hide CTA if user came from the app (?from=app)
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('from') === 'app') {
+    document.getElementById('ctaBanner').classList.add('hidden');
+  }
+
+  // ── Toggle release cards ───────────────────────────────────
+  function toggleRelease(header) {
+    header.closest('.release-card').classList.toggle('open');
+  }
+</script>
+</body>
+</html>

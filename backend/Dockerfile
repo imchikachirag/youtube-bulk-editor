@@ -1,7 +1,7 @@
 # YouTube Bulk Editor — Docker Configuration
 # Deploys to Google Cloud Run
 #
-# Copyright (c) 2025 Chirag Mehta
+# Copyright (c) 2026 Chirag Mehta
 # github.com/imchikachirag/youtube-bulk-editor
 
 FROM node:20-alpine

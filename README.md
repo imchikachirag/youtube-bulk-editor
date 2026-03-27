@@ -28,7 +28,7 @@ This tool is built with privacy as the primary constraint, not an afterthought.
 1. You click "Sign in with Google" and are redirected to Google's own login page
 2. After you approve, Google sends a one-time code to our backend on Google Cloud Run
 3. The backend exchanges the code for an OAuth token and immediately redirects it to your browser as a URL fragment
-4. The token is stored in your browser's `sessionStorage` only — never written to any server, database, or log
+4. The token is stored in your browser's `sessionStorage` only  -  never written to any server, database, or log
 5. All YouTube API calls go directly from your browser to YouTube. Our server is never involved again
 
 **What our server stores:** Nothing. Zero. The backend is a 60-line file with two routes. You can read every line at `backend/server.js`.
@@ -90,4 +90,4 @@ If this tool saved you time, please donate to any NGO of your choice. That is al
 
 ---
 
-*Copyright 2025 Chirag Mehta. Made with love in India.*
+*Copyright 2026 Chirag Mehta. Made with ❤️ in India.*
