@@ -17,7 +17,7 @@
 
 // ── Config ───────────────────────────────────────────────────
 // Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
-const APP_VERSION = '2.2.0';
+const APP_VERSION = '2.3.0';
 const BACKEND_URL = window.YT_EDITOR_CONFIG?.backendUrl || 'https://youtube-bulk-editor-api-48045104741.asia-south1.run.app';
 const YT_BASE     = 'https://www.googleapis.com/youtube/v3';
 
@@ -163,7 +163,7 @@ $('btnSignOut').addEventListener('click', async () => {
   editedVideos = {};
   savedRows    = new Set();
   $('channelBadge').classList.add('hidden');
-  ['btnDownload', 'btnImport', 'btnSaveAll', 'btnSignOut', 'btnSwitchChannel'].forEach(id => $(id).classList.add('hidden'));
+  ['exportBtnGroup', 'btnImport', 'btnSaveAll', 'btnSignOut', 'btnSwitchChannel'].forEach(id => $(id).classList.add('hidden'));
   showScreen('signIn');
   showToast('Disconnected. Token revoked at Google.', 'success');
 });
@@ -308,7 +308,7 @@ async function loadVideos(channel) {
 
     applyFiltersAndRender();
     showScreen('editor');
-    $('btnDownload').classList.remove('hidden');
+    $('exportBtnGroup').classList.remove('hidden');
     $('btnImport').classList.remove('hidden');
     $('btnSaveAll').classList.remove('hidden');
     $('btnSignOut').classList.remove('hidden');
@@ -576,6 +576,28 @@ async function saveRow(vid) {
     defaultLanguage: sn.defaultLanguage
   };
 
+  // YouTube API rejects descriptions containing < or > characters
+  if (/[<>]/.test(newSnippet.description || '')) {
+    const row    = document.querySelector(`tr[data-vid="${vid}"]`);
+    const status = document.querySelector(`.row-status[data-vid="${vid}"]`);
+    if (row) row.classList.add('error');
+    if (status) status.innerHTML = '<span class="status-error">Error</span>';
+    const err = new Error('Description contains < or > characters which YouTube does not allow. Please remove them and try again.');
+    if (!isBulkSaving) showToast(err.message, 'error');
+    throw err;
+  }
+
+  // YouTube API rejects titles containing < or > characters
+  if (/[<>]/.test(newSnippet.title || '')) {
+    const row    = document.querySelector(`tr[data-vid="${vid}"]`);
+    const status = document.querySelector(`.row-status[data-vid="${vid}"]`);
+    if (row) row.classList.add('error');
+    if (status) status.innerHTML = '<span class="status-error">Error</span>';
+    const err = new Error('Title contains < or > characters which YouTube does not allow. Please remove them and try again.');
+    if (!isBulkSaving) showToast(err.message, 'error');
+    throw err;
+  }
+
   const row    = document.querySelector(`tr[data-vid="${vid}"]`);
   const status = document.querySelector(`.row-status[data-vid="${vid}"]`);
   if (status) status.innerHTML = '<span class="status-saving">Saving...</span>';
@@ -670,7 +692,7 @@ $('btnSaveAll').addEventListener('click', async () => {
     showToast(`All ${failed} saves failed. Quota exceeded or connection error.`, 'warning');
   } else {
     msg.textContent = `${done} saved, ${failed} failed. Scroll to see red rows.`;
-    showToast(`${done} saved, ${failed} failed — check red rows below.`, 'warning');
+    showToast(`${done} saved, ${failed} failed. Check red rows below.`, 'warning');
   }
   setTimeout(() => bar.classList.add('hidden'), failed > 0 ? 6000 : 3500);
 });
@@ -719,37 +741,19 @@ $('btnRefresh').addEventListener('click', async () => {
 
 // ── Export CSV ────────────────────────────────────────────────
 // Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
-$('btnDownload').addEventListener('click', () => {
-  if (!allVideos.length) return;
-
+function buildCSV(videoList) {
   const headers = [
-    'Video ID',
-    'Title',
-    'Description',
-    'Tags',
-    'Privacy Status',
-    'Publish Status',
-    'Published At',
-    'Last Updated At',
-    'Duration',
-    'Views',
-    'Likes',
-    'Comments',
-    'Default Language',
-    'Category ID',
-    'Live Broadcast Content',
-    'URL'
+    'Video ID', 'Title', 'Description', 'Tags',
+    'Privacy Status', 'Publish Status', 'Published At', 'Last Updated At',
+    'Duration', 'Views', 'Likes', 'Comments',
+    'Default Language', 'Category ID', 'Live Broadcast Content', 'URL'
   ];
-
   const rows = [headers];
-
-  allVideos.forEach(v => {
-    const sn   = v.snippet          || {};
-    const st   = v.status           || {};
-    const cd   = v.contentDetails   || {};
-    const stat = v.statistics       || {};
-
-    // Format ISO 8601 duration (PT4M13S) to human readable (4m 13s)
+  videoList.forEach(v => {
+    const sn   = v.snippet        || {};
+    const st   = v.status         || {};
+    const cd   = v.contentDetails || {};
+    const stat = v.statistics     || {};
     function parseDuration(iso) {
       if (!iso) return '';
       const m = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
@@ -757,22 +761,19 @@ $('btnDownload').addEventListener('click', () => {
       const h = parseInt(m[1]||0), min = parseInt(m[2]||0), s = parseInt(m[3]||0);
       return [h && `${h}h`, min && `${min}m`, `${s}s`].filter(Boolean).join(' ');
     }
-
-    // Format date to readable form
     function fmtDate(iso) {
       if (!iso) return '';
       return new Date(iso).toISOString().replace('T',' ').substring(0,19) + ' UTC';
     }
-
     rows.push([
       csvCell(v.id),
       csvCell(sn.title                      || ''),
       csvCell(sn.description                || ''),
       csvCell((sn.tags || []).join(', ')    || ''),
-      csvCell(st.privacyStatus              || ''),   // public / private / unlisted
-      csvCell(st.uploadStatus               || ''),   // processed / uploaded / etc
+      csvCell(st.privacyStatus              || ''),
+      csvCell(st.uploadStatus               || ''),
       csvCell(fmtDate(sn.publishedAt)       || ''),
-      csvCell(fmtDate(cd.lastUpdated)        || ''),   // last metadata update
+      csvCell(fmtDate(cd.lastUpdated)        || ''),
       csvCell(parseDuration(cd.duration)    || ''),
       csvCell(stat.viewCount                || '0'),
       csvCell(stat.likeCount                || '0'),
@@ -783,16 +784,47 @@ $('btnDownload').addEventListener('click', () => {
       csvCell(`https://www.youtube.com/watch?v=${v.id}`)
     ]);
   });
+  return rows.map(r => r.join(',')).join('\n');
+}
+function csvCell(val) { return `"${String(val).replace(/"/g,'""')}"`; }
 
-  const csv  = rows.map(r => r.join(',')).join('\n');
+function downloadCSV(csv, filename) {
   const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
   const a    = document.createElement('a');
   a.href     = URL.createObjectURL(blob);
-  a.download = `youtube-videos-${new Date().toISOString().split('T')[0]}.csv`;
+  a.download = filename;
   a.click();
-  showToast('CSV downloaded', 'success');
+}
+
+// Export All: always downloads complete channel backup
+$('btnDownload').addEventListener('click', () => {
+  if (!allVideos.length) return;
+  downloadCSV(buildCSV(allVideos), `youtube-videos-${new Date().toISOString().split('T')[0]}.csv`);
+  showToast(`CSV downloaded (${allVideos.length} videos)`, 'success');
 });
-function csvCell(val) { return `"${String(val).replace(/"/g,'""')}"`; }
+
+// Dropdown toggle
+$('btnExportDropdown').addEventListener('click', e => {
+  e.stopPropagation();
+  $('exportDropdownMenu').classList.toggle('hidden');
+});
+
+// Close dropdown when clicking anywhere else
+document.addEventListener('click', () => {
+  const menu = $('exportDropdownMenu');
+  if (menu) menu.classList.add('hidden');
+});
+
+// Export Visible: downloads only the currently filtered/searched rows
+$('btnExportVisible').addEventListener('click', () => {
+  $('exportDropdownMenu').classList.add('hidden');
+  if (!filteredVids.length) { showToast('No videos visible to export', 'error'); return; }
+  const isFiltered = filteredVids.length < allVideos.length;
+  const suffix     = isFiltered ? '-filtered' : '';
+  downloadCSV(buildCSV(filteredVids), `youtube-videos${suffix}-${new Date().toISOString().split('T')[0]}.csv`);
+  const label = isFiltered ? `${filteredVids.length} visible videos` : `${filteredVids.length} videos`;
+  showToast(`CSV downloaded (${label})`, 'success');
+});
 
 // ── Import CSV ────────────────────────────────────────────────
 // Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
@@ -848,13 +880,17 @@ function parseAndPreviewCSV(raw) {
   const allRows = parseCSV(text);
   if (allRows.length < 2) { showToast('CSV appears empty', 'error'); return; }
 
-  const headers = allRows[0].map(h => h.trim().toLowerCase());
+  // Strip any surrounding quotes from headers (Excel sometimes adds them) and normalise
+  const headers = allRows[0].map(h => h.trim().replace(/^["']|["']$/g, '').toLowerCase());
   const idCol    = headers.indexOf('video id');
   const titleCol = headers.indexOf('title');
   const descCol  = headers.indexOf('description');
   const tagsCol  = headers.indexOf('tags');
 
-  if (idCol === -1) { showToast('CSV missing "Video ID" column', 'error'); return; }
+  if (idCol === -1) {
+    showToast('CSV missing "Video ID" column. Make sure the header row has a "Video ID" column.', 'error');
+    return;
+  }
 
   // Build lookup of currently loaded videos
   const loadedMap = {};
@@ -866,7 +902,8 @@ function parseAndPreviewCSV(raw) {
 
   for (let i = 1; i < allRows.length; i++) {
     const cols  = allRows[i];
-    const vid   = (cols[idCol] || '').trim();
+    // Strip surrounding quotes from video ID (Excel can add extra quoting)
+    const vid   = (cols[idCol] || '').trim().replace(/^["']|["']$/g, '');
     if (!vid) continue;
 
     const csvTitle = titleCol > -1 ? (cols[titleCol] || '').trim() || null : null;
@@ -1005,6 +1042,7 @@ function showToast(msg, type = '') {
   t.classList.remove('hidden');
   clearTimeout(_tt);
   // Quota/warning messages stay longer so user can read them
-  const duration = (type === 'warning') ? 8000 : 3500;
+  // Error messages also stay longer (5s) so they are not missed
+  const duration = (type === 'warning') ? 8000 : (type === 'error') ? 5000 : 3500;
   _tt = setTimeout(() => t.classList.add('hidden'), duration);
 }

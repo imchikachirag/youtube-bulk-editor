@@ -143,7 +143,7 @@
     body.dark .site-footer { border-color: var(--border); }
     body.dark .collapsible-light { background: var(--accent-lt); border-color: var(--border2); }
     body.dark .collapsible-footer { background: var(--surface2); border-color: var(--border); }
-    body.dark tr:hover td { background: var(--surface3) !important; }
+    /* video-row hover rules below handle all row hover states in dark mode */
     body.dark .import-summary { background: var(--surface2); border-color: var(--border); }
     /* Table row alternating */
     body.dark .video-row:nth-child(even) { background: #181818; }
@@ -250,6 +250,28 @@
     .btn-success:hover:not(:disabled) { background: #d4edda; }
     .btn-large    { padding: 12px 32px; font-size: 15px; border-radius: var(--radius); }
     .btn-sm       { padding: 5px 10px; font-size: 12px; }
+
+    /* ── Split export button ───────────────────────────────── */
+    .split-btn-group { position: relative; display: inline-flex; }
+    .split-btn-main  { border-radius: var(--radius) 0 0 var(--radius); border-right: none !important; }
+    .split-btn-arrow {
+      border-radius: 0 var(--radius) var(--radius) 0; padding: 7px 9px;
+      border-left: 1px solid var(--border2) !important;
+    }
+    .split-btn-arrow:hover:not(:disabled) { background: var(--surface2); color: var(--text); }
+    .split-dropdown {
+      position: absolute; top: calc(100% + 4px); right: 0; z-index: 200;
+      background: var(--surface); border: 1px solid var(--border2);
+      border-radius: var(--radius); box-shadow: 0 4px 16px rgba(0,0,0,.12);
+      min-width: 160px; overflow: hidden;
+    }
+    .split-dropdown-item {
+      display: flex; align-items: center; gap: 8px;
+      width: 100%; padding: 9px 14px; background: none; border: none;
+      font-size: 13px; font-family: var(--font); font-weight: 500;
+      color: var(--text2); cursor: pointer; white-space: nowrap; text-align: left;
+    }
+    .split-dropdown-item:hover { background: var(--surface2); color: var(--text); }
 
     /* ══ SCREENS ═════════════════════════════════════════════ */
     .hidden { display: none !important; }
@@ -504,6 +526,11 @@
     .editable.tags-field   { height: 68px; font-size: 12px; color: var(--text2); word-break: break-word; }
     .editable.is-changed   { border-color: #f59e0b !important; background: #fffbeb !important; box-shadow: 0 0 0 3px rgba(245,158,11,.12) !important; }
 
+    /* Dark mode overrides for editable field states: prevents white flash on hover/focus/edit */
+    body.dark .editable:hover  { background: var(--surface3); }
+    body.dark .editable:focus  { background: var(--surface3); color: var(--text); }
+    body.dark .editable.is-changed { background: var(--yellow-lt) !important; color: var(--text) !important; }
+
     /* Char count always subtly visible, not just on focus */
     .char-count { font-size: 10px; color: var(--text3); text-align: right; margin-top: 2px; }
     .char-count.warn { color: var(--yellow); font-weight: 600; }
@@ -755,7 +782,7 @@
     <a class="logo" href="https://chiragmehta.info/youtube-bulk-editor">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="#cc0000"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>
       YouTube <span class="logo-accent">Bulk</span> Editor
-      <a id="appVersionBadge" class="version-badge" href="changelog/?from=app" target="_blank" rel="noopener noreferrer" title="View changelog" style="text-decoration:none">v2.2.0</a>
+      <a id="appVersionBadge" class="version-badge" href="changelog/?from=app" target="_blank" rel="noopener noreferrer" title="View changelog" style="text-decoration:none">v2.3.0</a>
     </a>
     <div id="channelBadge" class="channel-badge hidden">
       <span class="badge-dot"></span>
@@ -776,10 +803,21 @@
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
       Switch Channel
     </button>
-    <button id="btnDownload" class="btn btn-ghost hidden">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      Export CSV
-    </button>
+    <div id="exportBtnGroup" class="split-btn-group hidden">
+      <button id="btnDownload" class="btn btn-ghost split-btn-main">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export All
+      </button>
+      <button id="btnExportDropdown" class="btn btn-ghost split-btn-arrow" title="More export options" aria-label="More export options">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div id="exportDropdownMenu" class="split-dropdown hidden">
+        <button id="btnExportVisible" class="split-dropdown-item">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          Export Visible
+        </button>
+      </div>
+    </div>
     <button id="btnImport" class="btn btn-ghost hidden">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
       Import CSV
@@ -849,7 +887,7 @@
       <a href="https://twitter.com/imchikachirag" target="_blank" rel="noopener noreferrer">Twitter @imchikachirag</a>
       <a href="https://github.com/imchikachirag/youtube-bulk-editor" target="_blank" rel="noopener noreferrer">GitHub  -  Open Source</a>
       <a href="https://chiragmehta.info" target="_blank" rel="noopener noreferrer">chiragmehta.info</a>
-      <a href="mailto:jain.chirag+youtubebulkeditor@gmail.com">Contact</a>
+      <a href="/cdn-cgi/l/email-protection#e08a81898ece838889928187cb998f959495828582958c8b858489948f92a0878d81898cce838f8d">Contact</a>
       <a href="https://chiragmehta.info/youtube-bulk-editor/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
     </div>
     <div class="footer-stack">
@@ -882,7 +920,7 @@
       <a href="https://chiragmehta.info" target="_blank" rel="noopener noreferrer">Chirag Mehta</a> &nbsp;·&nbsp;
       <a href="https://twitter.com/imchikachirag" target="_blank" rel="noopener noreferrer">@imchikachirag</a>
     </p>
-    <p style="font-size:11px;color:var(--text3)">Copyright 2026 Chirag Mehta. MIT License. &nbsp;·&nbsp; <span id="footerVersionSignin">v2.2.0</span></p>
+    <p style="font-size:11px;color:var(--text3)">Copyright 2026 Chirag Mehta. MIT License. &nbsp;·&nbsp; <span id="footerVersionSignin">v2.3.0</span></p>
   </div>
 
 </div>
@@ -1136,7 +1174,7 @@
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
             Send Feedback
           </button>
-          <span class="form-note">Sends to <code>jain.chirag+youtubebulkeditor@gmail.com</code></span>
+          <span class="form-note">Sends to <code><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3953585057175a51504b585e1240564c4d4c5b5c5b4c55525c5d504d564b795e54585055175a5654">[email&#160;protected]</a></code></span>
         </div>
       </div>
     </details>
@@ -1148,7 +1186,7 @@
         <a href="https://twitter.com/imchikachirag" target="_blank" rel="noopener noreferrer">Twitter @imchikachirag</a>
         <a href="https://github.com/imchikachirag/youtube-bulk-editor" target="_blank" rel="noopener noreferrer">GitHub  -  Open Source</a>
         <a href="https://chiragmehta.info" target="_blank" rel="noopener noreferrer">chiragmehta.info</a>
-        <a href="mailto:jain.chirag+youtubebulkeditor@gmail.com">Contact</a>
+        <a href="/cdn-cgi/l/email-protection#5e343f3730703d36372c3f397527312b2a2b3c3b3c2b32353b3a372a312c1e39333f3732703d3133">Contact</a>
         <a href="https://chiragmehta.info/youtube-bulk-editor/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
       </div>
       <div class="footer-stack">
@@ -1181,7 +1219,7 @@
         <a href="https://chiragmehta.info" target="_blank" rel="noopener noreferrer">Chirag Mehta</a> &nbsp;·&nbsp;
         <a href="https://twitter.com/imchikachirag" target="_blank" rel="noopener noreferrer">@imchikachirag</a>
       </p>
-      <p style="font-size:11px;color:var(--text3)">Copyright 2026 Chirag Mehta. MIT License. &nbsp;·&nbsp; <span id="footerVersion">v2.2.0</span></p>
+      <p style="font-size:11px;color:var(--text3)">Copyright 2026 Chirag Mehta. MIT License. &nbsp;·&nbsp; <span id="footerVersion">v2.3.0</span></p>
     </div>
 
   </div>

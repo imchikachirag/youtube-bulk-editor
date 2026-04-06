@@ -276,7 +276,7 @@
     <p>Every update to YouTube Bulk Editor, explained in plain language. What changed, what got better, and what was fixed.</p>
   </div>
 
-  <!-- CTA banner — shown only when NOT coming from the app -->
+  <!-- CTA banner: shown only when NOT coming from the app -->
   <div class="cta-banner" id="ctaBanner">
     <div>
       <div class="cta-banner-text">Free tool for YouTube creators</div>
@@ -290,14 +290,71 @@
 
   <div class="timeline">
 
-    <!-- v2.2.0 -->
+    <!-- v2.3.0 -->
     <div class="release latest">
       <div class="release-dot"></div>
       <div class="release-card open">
         <div class="release-header" onclick="toggleRelease(this)">
+          <span class="release-version">v2.3.0</span>
+          <span class="release-name">Export Visible Rows</span>
+          <span class="release-tag tag-latest">Latest</span>
+          <span class="release-date">Apr 2026</span>
+          <svg class="release-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="release-body">
+          <div class="release-summary">Export CSV now has two modes: Export All for a full channel backup, and Export Visible to download only the rows currently shown after searching or filtering.</div>
+          <div class="release-section section-new">
+            <div class="release-section-title">New</div>
+            <ul>
+              <li>Export Visible option added to the Export button. When you have searched or filtered the table, click the arrow on the Export button and choose Export Visible to download only the videos currently shown. The filename includes -filtered so you can tell it apart from a full export.</li>
+              <li>Export All still works exactly as before: one click downloads all channel videos regardless of any active search or filter.</li>
+            </ul>
+          </div>
+          <div class="release-section section-improved">
+            <div class="release-section-title">Improved</div>
+            <ul>
+              <li>Export toast now shows the video count so you can confirm how many rows were included in the download.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- v2.2.1 -->
+    <div class="release feature">
+      <div class="release-dot"></div>
+      <div class="release-card">
+        <div class="release-header" onclick="toggleRelease(this)">
+          <span class="release-version">v2.2.1</span>
+          <span class="release-name">Dark Mode Fixes, Import Fix, Angle Bracket Protection</span>
+          <span class="release-tag tag-feature">Feature</span>
+          <span class="release-date">Apr 2026</span>
+          <svg class="release-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="release-body">
+          <div class="release-summary">Bug fixes for dark mode text visibility, import CSV reliability, and a clear error when descriptions contain characters YouTube does not allow.</div>
+          <div class="release-section section-fixed">
+            <div class="release-section-title">Fixed</div>
+            <ul>
+              <li>Dark mode: text was invisible while typing in a description field due to a hardcoded white background on hover and edited states. All editable fields now stay dark and readable in dark mode at all times.</li>
+              <li>Dark mode: hovering over a saved row briefly flashed green instead of the correct subtle dark hover colour. The conflicting CSS rule has been removed.</li>
+              <li>Import CSV: the preview modal was not appearing reliably. CSV headers and Video ID values now have surrounding quotes stripped before matching, which fixes compatibility with files re-saved in Excel.</li>
+              <li>Save error: descriptions or titles containing the characters &lt; or &gt; caused a raw API error from YouTube with no useful message. The app now catches this before sending and shows a clear explanation: remove the angle brackets and try again.</li>
+              <li>Error toasts now stay visible for 5 seconds instead of 3.5 so error messages are not missed.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- v2.2.0 -->
+    <div class="release feature">
+      <div class="release-dot"></div>
+      <div class="release-card">
+        <div class="release-header" onclick="toggleRelease(this)">
           <span class="release-version">v2.2.0</span>
           <span class="release-name">Dark Mode, Smarter Imports, Better Feedback</span>
-          <span class="release-tag tag-latest">Latest</span>
+          <span class="release-tag tag-feature">Feature</span>
           <span class="release-date">Mar 2026</span>
           <svg class="release-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
