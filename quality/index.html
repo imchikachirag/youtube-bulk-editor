@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quality Report - YouTube Bulk Editor v2.3.0</title>
+  <meta name="robots" content="noindex, nofollow">
+  <style>
+    :root {
+      --bg:#f4f6f9;--surface:#ffffff;--border:#e2e8f0;--text:#1a202c;--text2:#4a5568;--text3:#718096;
+      --green:#22c55e;--green-lt:#f0fdf4;--green-dk:#166534;
+      --red:#ef4444;--red-lt:#fef2f2;--red-dk:#991b1b;
+      --blue:#3b82f6;--blue-lt:#eff6ff;--blue-dk:#1e40af;
+      --yellow:#f59e0b;--yellow-lt:#fffbeb;
+      --font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    }
+    body.dark {
+      --bg:#0f0f0f;--surface:#1a1a1a;--border:#2d2d2d;--text:#f1f1f1;--text2:#aaa;--text3:#666;
+      --green-lt:#052e16;--green-dk:#4ade80;--red-lt:#2d0a0a;--red-dk:#f87171;
+      --blue-lt:#0c1a3a;--blue-dk:#93c5fd;--yellow-lt:#1c1200;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;}
+    .header{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;}
+    .header-left{display:flex;align-items:center;gap:12px;}
+    .logo{font-size:16px;font-weight:700;color:var(--text);text-decoration:none;}
+    .version-pill{background:var(--blue-lt);color:var(--blue-dk);font-size:11px;font-weight:700;padding:2px 8px;border-radius:12px;border:1px solid var(--blue);}
+    .page-badge{background:var(--yellow-lt);color:var(--yellow);font-size:11px;font-weight:600;padding:2px 8px;border-radius:12px;border:1px solid var(--yellow);}
+    .btn-theme{background:none;border:1px solid var(--border);border-radius:6px;padding:6px 10px;cursor:pointer;color:var(--text2);font-size:13px;}
+    .main{max-width:960px;margin:0 auto;padding:32px 24px;}
+    .report-header{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:24px;}
+    .report-title{font-size:22px;font-weight:700;margin-bottom:6px;}
+    .report-meta{font-size:13px;color:var(--text3);}
+    .report-meta span{margin-right:20px;}
+    .scoreboard{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+    .score-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center;}
+    .score-number{font-size:32px;font-weight:800;line-height:1;margin-bottom:4px;}
+    .score-label{font-size:12px;color:var(--text3);font-weight:500;}
+    .score-card.pass .score-number{color:var(--green);}
+    .score-card.security .score-number{color:var(--blue);}
+    .score-card.bugs .score-number{color:var(--yellow);}
+    .score-card.version .score-number{color:var(--text);font-size:22px;}
+    .section{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:20px;overflow:hidden;}
+    .section-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;}
+    .section-header:hover{background:var(--bg);}
+    .section-title{font-size:14px;font-weight:700;}
+    .section-result{font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px;display:flex;align-items:center;gap:5px;}
+    .section-result.all-pass{background:var(--green-lt);color:var(--green-dk);}
+    .section-body.hidden{display:none;}
+    .check-row{display:flex;align-items:flex-start;gap:12px;padding:9px 20px;border-bottom:1px solid var(--border);font-size:13px;}
+    .check-row:last-child{border-bottom:none;}
+    .check-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
+    .check-row.pass .check-text{color:var(--text);}
+    .check-text{color:var(--text2);}
+    .bugs-section{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin-bottom:20px;}
+    .bugs-title{font-size:14px;font-weight:700;margin-bottom:14px;}
+    .bug-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);align-items:flex-start;}
+    .bug-item:last-child{border-bottom:none;}
+    .bug-tag{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;flex-shrink:0;margin-top:2px;}
+    .bug-tag.fixed{background:var(--green-lt);color:var(--green-dk);}
+    .bug-tag.new{background:var(--blue-lt);color:var(--blue-dk);}
+    .bug-desc{font-size:13px;color:var(--text2);}
+    .bug-desc strong{color:var(--text);display:block;margin-bottom:2px;}
+    .footer-note{text-align:center;font-size:12px;color:var(--text3);padding:24px 0 8px;}
+    @media(max-width:600px){.scoreboard{grid-template-columns:repeat(2,1fr);}}
+  </style>
+</head>
+<body>
+<div class="header">
+  <div class="header-left">
+    <a href="../" class="logo">YouTube Bulk Editor</a>
+    <span class="version-pill">v2.3.0</span>
+    <span class="page-badge">Quality Report</span>
+  </div>
+  <button class="btn-theme" onclick="toggleTheme()" id="themeBtn">Dark</button>
+</div>
+<div class="main">
+  <div class="report-header">
+    <div class="report-title">Quality Report</div>
+    <div class="report-meta">
+      <span>Version: v2.3.0</span>
+      <span>Release: April 2026</span>
+      <span>Test suite: tests/test.js + tests/security.js</span>
+    </div>
+  </div>
+  <div class="scoreboard">
+    <div class="score-card version"><div class="score-number">v2.3.0</div><div class="score-label">Current Version</div></div>
+    <div class="score-card pass"><div class="score-number">92/92</div><div class="score-label">Functional Tests</div></div>
+    <div class="score-card security"><div class="score-number">35/35</div><div class="score-label">Security Checks</div></div>
+    <div class="score-card bugs"><div class="score-number">1</div><div class="score-label">Feature Added (v2.3.0)</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-title">File Integrity (7 checks)</span>
+      <span class="section-result all-pass">7/7 Passed</span>
+    </div>
+    <div class="section-body">
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">frontend/index.html exists</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">frontend/editor.js exists</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">frontend/privacy/index.html exists</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">frontend/changelog/index.html exists</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">backend/server.js exists</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">backend/package.json exists</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">favicon.ico exists</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-title">Version Consistency (5 checks)</span>
+      <span class="section-result all-pass">5/5 Passed</span>
+    </div>
+    <div class="section-body">
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">APP_VERSION defined: v2.3.0</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">index.html version badge href</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">index.html footer version</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">changelog page exists</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">changelog mentions version</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-title">Core Functions (13 checks)</span>
+      <span class="section-result all-pass">13/13 Passed</span>
+    </div>
+    <div class="section-body">
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">function showToast</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">function parseYTError</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">function ytFetch</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">function ytUpdate</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">function saveRow</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">function revertRow</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">function applyFiltersAndRender</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">function renderPage</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">function updateVideoCount</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">function parseAndPreviewCSV</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">function toggleRelease</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">function updateThemeIcon</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">function initTheme</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-title">UI Elements (21 checks)</span>
+      <span class="section-result all-pass">21/21 Passed</span>
+    </div>
+    <div class="section-body">
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Sign in button</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Loading screen</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Channel picker</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Editor screen</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Save All button</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Refresh button</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Export All button</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Export Visible button</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Export dropdown arrow</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Export split group</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Import CSV button</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Disconnect button</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Theme toggle</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Search input</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Filter dropdown</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Sort dropdown</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Toast notification</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Save progress bar</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Import modal</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Version badge</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Import field toggles</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-title">Changelog Page (10 checks)</span>
+      <span class="section-result all-pass">10/10 Passed</span>
+    </div>
+    <div class="section-body">
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Has timeline structure</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Has CTA banner</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">CTA hidden when from=app</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Has dark mode toggle</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Has back to app button</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Has v2.2.0 release</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Has v2.1.0 release</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Has v2.0.0 release</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Latest release open by default</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Uses same CSS variables as main app</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-title">Import / Export Logic (16 checks)</span>
+      <span class="section-result all-pass">16/16 Passed</span>
+    </div>
+    <div class="section-body">
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Empty CSV field treated as null (not empty string)</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Field toggle: importApplyTitle</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Field toggle: importApplyDesc</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Field toggle: importApplyTags</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Multiline CSV parser (char-by-char)</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Filter resets to all videos after import</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Filter resets to all videos on refresh</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">buildCSV helper function exists</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">downloadCSV helper function exists</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Export All uses allVideos</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Export Visible uses filteredVids</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Export Visible skips when no rows visible</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Export Visible filename includes -filtered suffix</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Export dropdown toggle exists</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Export dropdown closes on outside click</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">csvCell helper function exists</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-title">Save Logic (6 checks)</span>
+      <span class="section-result all-pass">6/6 Passed</span>
+    </div>
+    <div class="section-body">
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">isBulkSaving flag exists</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Per-row toasts suppressed during bulk save</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Save All counts failures</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Save All shows success summary</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Save All shows failure summary</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">saveRow re-throws errors for bulk count</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-title">Regression Tests (8 checks)</span>
+      <span class="section-result all-pass">8/8 Passed</span>
+    </div>
+    <div class="section-body">
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">R1: parseYTError strips HTML tags from API errors</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">R2: CSV parser handles multiline quoted fields</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">R3: Refresh resets filter to all videos</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">R4: Empty CSV field returns null, not empty string</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">R5: Sign-in footer has max-width constraint</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">R6: Dark mode row hover state defined</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">R7: Version badge is a link to changelog</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">R8: Save All has outcome summary message</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-title">Privacy and Trust (6 checks)</span>
+      <span class="section-result all-pass">6/6 Passed</span>
+    </div>
+    <div class="section-body">
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">sessionStorage used for token (not localStorage)</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">localStorage NOT used for token</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Token cleared on disconnect</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Privacy policy page exists</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Privacy banner present in app</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Token not written to URL</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-title">Security: XSS Prevention (6 checks)</span>
+      <span class="section-result all-pass">6/6 Passed</span>
+    </div>
+    <div class="section-body">
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">No eval() usage</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">innerHTML never receives raw user input</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">textContent used for dynamic text rendering</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Toast uses textContent (not innerHTML)</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">API error messages stripped of HTML tags before display</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">No dangerouslySetInnerHTML</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-title">Security: Credential and Token Safety (6 checks)</span>
+      <span class="section-result all-pass">6/6 Passed</span>
+    </div>
+    <div class="section-body">
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">OAuth token stored in sessionStorage only (not localStorage)</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Token cleared from sessionStorage on disconnect</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Token cleared on 401 Unauthorized</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Token not written to URL search params</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Token not logged to console</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Backend has no storage or database (stateless OAuth only)</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-title">Security: OAuth CSRF Protection (3 checks)</span>
+      <span class="section-result all-pass">3/3 Passed</span>
+    </div>
+    <div class="section-body">
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">OAuth state parameter generated and validated</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">State nonce uses cryptographic random bytes</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">State nonce is one-time use with TTL expiry</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header" onclick="toggleSection(this)">
+      <span class="section-title">Security: Headers, CORS and API Validation (9 checks)</span>
+      <span class="section-result all-pass">9/9 Passed</span>
+    </div>
+    <div class="section-body">
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">X-Frame-Options: DENY set (clickjacking protection)</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">X-Content-Type-Options: nosniff set</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">CSP frame-ancestors none set</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Referrer-Policy header set</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">localhost CORS origins gated to development mode only</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">CORS uses startsWith match (no wildcard)</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">saveRow wrapped in try/catch</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">saveRow rejects angle brackets before API call</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Quota errors produce friendly message with reset time</span></div>
+    </div>
+  </div>
+
+  <div class="bugs-section">
+    <div class="bugs-title">What Changed in v2.3.0</div>
+    <div class="bug-item">
+      <span class="bug-tag new">NEW</span>
+      <div class="bug-desc">
+        <strong>Export Visible rows</strong>
+        The Export button is now a split button. The main click still exports all videos as a full channel backup. Clicking the dropdown arrow reveals Export Visible, which downloads only the rows currently shown after any search or filter. The filename includes -filtered so you can tell the two apart. The toast confirms how many videos were included.
+      </div>
+    </div>
+    <div class="bugs-title" style="margin-top:20px;">Bugs Fixed in v2.2.1</div>
+    <div class="bug-item">
+      <span class="bug-tag fixed">FIXED</span>
+      <div class="bug-desc"><strong>Dark mode: text invisible while typing</strong>Editable textareas had hardcoded white backgrounds for hover and changed states.</div>
+    </div>
+    <div class="bug-item">
+      <span class="bug-tag fixed">FIXED</span>
+      <div class="bug-desc"><strong>Dark mode: row flashes green on hover</strong>A generic tr:hover td rule conflicted with the specific saved-row hover rule.</div>
+    </div>
+    <div class="bug-item">
+      <span class="bug-tag fixed">FIXED</span>
+      <div class="bug-desc"><strong>Import CSV: preview modal not appearing</strong>CSV headers now have surrounding quotes stripped, fixing Excel-saved file compatibility. Error toasts stay 5 seconds.</div>
+    </div>
+    <div class="bug-item">
+      <span class="bug-tag fixed">FIXED</span>
+      <div class="bug-desc"><strong>Save: cryptic error with angle brackets</strong>App now validates for &lt; and &gt; before calling the YouTube API and shows a clear message.</div>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    YouTube Bulk Editor by Chirag Mehta &nbsp;·&nbsp; chiragmehta.info &nbsp;·&nbsp; Last updated April 2026
+  </div>
+</div>
+<script>
+  function toggleSection(header) { header.nextElementSibling.classList.toggle('hidden'); }
+  const saved = localStorage.getItem('ybe_theme');
+  if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.body.classList.add('dark');
+    document.getElementById('themeBtn').textContent = 'Light';
+  }
+  function toggleTheme() {
+    const isDark = document.body.classList.toggle('dark');
+    localStorage.setItem('ybe_theme', isDark ? 'dark' : 'light');
+    document.getElementById('themeBtn').textContent = isDark ? 'Light' : 'Dark';
+  }
+</script>
+</body>
+</html>
