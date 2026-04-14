@@ -186,8 +186,10 @@
     .tag-latest  { background: var(--accent-lt); color: var(--accent); }
     .tag-feature { background: var(--green-lt);  color: var(--green); }
     .tag-minor   { background: var(--surface2);  color: var(--text3); border: 1px solid var(--border); }
+    .tag-security { background: #fff0f0; color: #c0392b; }
     body.dark .tag-latest  { background: #1a2a3a; }
     body.dark .tag-feature { background: #0d2b1a; }
+    body.dark .tag-security { background: #2b0d0d; color: #e57373; }
 
     .release-date {
       font-size: 12px; color: var(--text3);
@@ -290,14 +292,66 @@
 
   <div class="timeline">
 
-    <!-- v2.3.0 -->
+    <!-- v2.3.2 -->
     <div class="release latest">
       <div class="release-dot"></div>
       <div class="release-card open">
         <div class="release-header" onclick="toggleRelease(this)">
+          <span class="release-version">v2.3.2</span>
+          <span class="release-name">Import CSV Fix and Contact Link Fix</span>
+          <span class="release-tag tag-latest">Latest</span>
+          <span class="release-date">Apr 2026</span>
+          <svg class="release-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="release-body">
+          <div class="release-summary">Import CSV now correctly detects description changes and shows a clear message when nothing has changed. The Contact link in the footer now works correctly on all hosting providers.</div>
+          <div class="release-section section-fixed">
+            <div class="release-section-title">Fixed</div>
+            <ul>
+              <li>Import CSV: description and title comparisons now trim whitespace on both the CSV value and the in-memory value. Previously, YouTube descriptions with trailing newlines caused all rows to falsely appear as changed even when the user had not edited them.</li>
+              <li>Import CSV: when no actual changes are detected in the imported file, a clear amber message now explains this instead of showing a modal with a disabled button and no explanation.</li>
+              <li>Import CSV: the file reader now has a try/catch and an error handler so any parsing errors surface as readable messages rather than silently failing.</li>
+              <li>Contact link in the page footer was using Cloudflare email obfuscation which only works behind a Cloudflare proxy. Replaced with a direct mailto link. Affected both footer instances and the feedback form note.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- v2.3.1 -->
+    <div class="release security">
+      <div class="release-dot"></div>
+      <div class="release-card">
+        <div class="release-header" onclick="toggleRelease(this)">
+          <span class="release-version">v2.3.1</span>
+          <span class="release-name">Security Fixes and Multi-Channel Refresh</span>
+          <span class="release-tag tag-security">Security</span>
+          <span class="release-date">Apr 2026</span>
+          <svg class="release-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="release-body">
+          <div class="release-summary">Four security and correctness fixes identified through a third-party code review: CORS hardened, import state properly declared, multi-channel refresh corrected, and all dynamic links now include rel=noopener.</div>
+          <div class="release-section section-fixed">
+            <div class="release-section-title">Fixed</div>
+            <ul>
+              <li>CORS origin check now uses exact string matching instead of prefix matching. Previously, an origin sharing the same prefix as the allowed domain could theoretically pass the check.</li>
+              <li>Import state variable was used without a top-level declaration. In strict mode this is a ReferenceError. The variable is now properly declared alongside all other app state.</li>
+              <li>Refresh button now correctly stays on the channel you selected if you manage multiple YouTube channels. Previously it always reloaded the first channel in the list regardless of your selection.</li>
+              <li>Dynamically generated video thumbnail links now include rel="noopener noreferrer" on their target="_blank" anchor tags, consistent with all other external links in the app.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- v2.3.0 -->
+    <div class="release feature">
+      <div class="release-dot"></div>
+      <div class="release-card">
+        <div class="release-header" onclick="toggleRelease(this)">
           <span class="release-version">v2.3.0</span>
           <span class="release-name">Export Visible Rows</span>
-          <span class="release-tag tag-latest">Latest</span>
+          <span class="release-tag tag-feature">Feature</span>
           <span class="release-date">Apr 2026</span>
           <svg class="release-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
         </div>

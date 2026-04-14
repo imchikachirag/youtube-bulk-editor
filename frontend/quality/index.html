@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quality Report - YouTube Bulk Editor v2.3.0</title>
+  <title>Quality Report - YouTube Bulk Editor v2.3.2</title>
   <meta name="robots" content="noindex, nofollow">
   <style>
     :root {
@@ -69,7 +69,7 @@
 <div class="header">
   <div class="header-left">
     <a href="../" class="logo">YouTube Bulk Editor</a>
-    <span class="version-pill">v2.3.0</span>
+    <span class="version-pill">v2.3.2</span>
     <span class="page-badge">Quality Report</span>
   </div>
   <button class="btn-theme" onclick="toggleTheme()" id="themeBtn">Dark</button>
@@ -78,16 +78,16 @@
   <div class="report-header">
     <div class="report-title">Quality Report</div>
     <div class="report-meta">
-      <span>Version: v2.3.0</span>
+      <span>Version: v2.3.2</span>
       <span>Release: April 2026</span>
       <span>Test suite: tests/test.js + tests/security.js</span>
     </div>
   </div>
   <div class="scoreboard">
-    <div class="score-card version"><div class="score-number">v2.3.0</div><div class="score-label">Current Version</div></div>
-    <div class="score-card pass"><div class="score-number">92/92</div><div class="score-label">Functional Tests</div></div>
+    <div class="score-card version"><div class="score-number">v2.3.2</div><div class="score-label">Current Version</div></div>
+    <div class="score-card pass"><div class="score-number">96/96</div><div class="score-label">Functional Tests</div></div>
     <div class="score-card security"><div class="score-number">35/35</div><div class="score-label">Security Checks</div></div>
-    <div class="score-card bugs"><div class="score-number">1</div><div class="score-label">Feature Added (v2.3.0)</div></div>
+    <div class="score-card bugs"><div class="score-number">4</div><div class="score-label">Bugs Fixed (v2.3.2)</div></div>
   </div>
 
   <div class="section">
@@ -112,7 +112,7 @@
       <span class="section-result all-pass">5/5 Passed</span>
     </div>
     <div class="section-body">
-      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">APP_VERSION defined: v2.3.0</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">APP_VERSION defined: v2.3.2</span></div>
       <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">index.html version badge href</span></div>
       <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">index.html footer version</span></div>
       <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">changelog page exists</span></div>
@@ -316,7 +316,7 @@
       <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">CSP frame-ancestors none set</span></div>
       <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Referrer-Policy header set</span></div>
       <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">localhost CORS origins gated to development mode only</span></div>
-      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">CORS uses startsWith match (no wildcard)</span></div>
+      <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">CORS uses exact origin match (no prefix or wildcard allowed)</span></div>
       <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">saveRow wrapped in try/catch</span></div>
       <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">saveRow rejects angle brackets before API call</span></div>
       <div class="check-row pass"><span class="check-icon">✅</span><span class="check-text">Quota errors produce friendly message with reset time</span></div>
@@ -324,12 +324,58 @@
   </div>
 
   <div class="bugs-section">
-    <div class="bugs-title">What Changed in v2.3.0</div>
+    <div class="bugs-title">What Changed in v2.3.2</div>
+    <div class="bug-item">
+      <span class="bug-tag fixed">FIXED</span>
+      <div class="bug-desc">
+        <strong>Import CSV: comparison trims both sides</strong>
+        Description and title comparisons now trim whitespace on both the CSV value and the in-memory value. YouTube descriptions with trailing newlines previously caused all rows to falsely appear as changed even when the user had not edited them.
+      </div>
+    </div>
+    <div class="bug-item">
+      <span class="bug-tag fixed">FIXED</span>
+      <div class="bug-desc">
+        <strong>Import CSV: clear message when no changes found</strong>
+        When no actual changes are detected in the imported file, a clear amber message now explains this. Previously a modal appeared with all rows showing "No Change" and a disabled button, giving the impression that nothing happened.
+      </div>
+    </div>
+    <div class="bug-item">
+      <span class="bug-tag fixed">FIXED</span>
+      <div class="bug-desc">
+        <strong>Import CSV: FileReader wrapped in try/catch with error handler</strong>
+        The file reader now has a try/catch and an onerror handler so any parsing failures surface as readable messages rather than silently failing with no feedback.
+      </div>
+    </div>
+    <div class="bug-item">
+      <span class="bug-tag fixed">FIXED</span>
+      <div class="bug-desc">
+        <strong>Contact link in footer: replaced Cloudflare email obfuscation with mailto</strong>
+        The Contact link in both footer instances and the feedback form note used Cloudflare email obfuscation which only works behind a Cloudflare proxy. Replaced with direct mailto links.
+      </div>
+    </div>
+    <div class="bugs-title" style="margin-top:20px;">Bugs Fixed in v2.3.1</div>
+    <div class="bug-item">
+      <span class="bug-tag fixed">FIXED</span>
+      <div class="bug-desc"><strong>CORS: exact origin match (security hardening)</strong> CORS origin check now uses exact string equality instead of prefix matching.</div>
+    </div>
+    <div class="bug-item">
+      <span class="bug-tag fixed">FIXED</span>
+      <div class="bug-desc"><strong>importParsed undeclared in strict mode</strong> The import state variable was used without a top-level declaration. In strict mode this is a ReferenceError.</div>
+    </div>
+    <div class="bug-item">
+      <span class="bug-tag fixed">FIXED</span>
+      <div class="bug-desc"><strong>Refresh stays on selected channel (multi-channel fix)</strong> Refresh button now correctly reloads the channel you had selected instead of always defaulting to the first.</div>
+    </div>
+    <div class="bug-item">
+      <span class="bug-tag fixed">FIXED</span>
+      <div class="bug-desc"><strong>rel=noopener noreferrer on dynamic video links</strong> Dynamically generated video thumbnail links now include rel="noopener noreferrer".</div>
+    </div>
+    <div class="bugs-title" style="margin-top:20px;">Feature Added in v2.3.0</div>
     <div class="bug-item">
       <span class="bug-tag new">NEW</span>
       <div class="bug-desc">
         <strong>Export Visible rows</strong>
-        The Export button is now a split button. The main click still exports all videos as a full channel backup. Clicking the dropdown arrow reveals Export Visible, which downloads only the rows currently shown after any search or filter. The filename includes -filtered so you can tell the two apart. The toast confirms how many videos were included.
+        The Export button is now a split button. Export All downloads the full channel backup. Export Visible downloads only the rows currently shown after any search or filter. The filename includes -filtered so you can tell them apart.
       </div>
     </div>
     <div class="bugs-title" style="margin-top:20px;">Bugs Fixed in v2.2.1</div>

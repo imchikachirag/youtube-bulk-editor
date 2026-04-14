@@ -17,7 +17,7 @@
 
 // ── Config ───────────────────────────────────────────────────
 // Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
-const APP_VERSION = '2.3.0';
+const APP_VERSION = '2.3.2';
 const BACKEND_URL = window.YT_EDITOR_CONFIG?.backendUrl || 'https://youtube-bulk-editor-api-48045104741.asia-south1.run.app';
 const YT_BASE     = 'https://www.googleapis.com/youtube/v3';
 
@@ -225,7 +225,9 @@ async function ytUpdate(videoId, snippet) {
 
 // ── Load channels ─────────────────────────────────────────────
 // Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
-let cachedChannels = [];
+let cachedChannels   = [];
+let importParsed     = []; // populated by parseAndPreviewCSV, consumed by btnConfirmImport
+let currentChannelId = null; // tracks selected channel so refresh stays on the right one
 
 async function loadChannels() {
   setLoading('Fetching your YouTube channels...');
@@ -273,6 +275,7 @@ function renderChannelPicker(channels) {
 // ── Load all videos ───────────────────────────────────────────
 // Copyright (c) 2026 Chirag Mehta  -  github.com/imchikachirag/youtube-bulk-editor
 async function loadVideos(channel) {
+  currentChannelId = channel.id; // track so refresh stays on the selected channel
   setLoading('Loading your videos...');
   try {
     const thumb = channel.snippet?.thumbnails?.default?.url || '';
@@ -385,7 +388,7 @@ function renderPage() {
       <td class="row-num">${globalIdx}</td>
       <td class="thumb-wrap">
         ${thumb
-          ? `<a href="${ytUrl}" target="_blank" title="Open on YouTube"><img src="${thumb}" alt="" loading="lazy"></a>`
+          ? `<a href="${ytUrl}" target="_blank" rel="noopener noreferrer" title="Open on YouTube"><img src="${thumb}" alt="" loading="lazy"></a>`
           : `<div class="thumb-placeholder"></div>`}
       </td>
       <td><div class="field-wrap" data-field="title">
@@ -733,7 +736,11 @@ $('btnRefresh').addEventListener('click', async () => {
   try {
     const data     = await ytFetch('/channels?part=snippet,contentDetails&mine=true&maxResults=50');
     const channels = data.items || [];
-    if (channels.length) await loadVideos(channels[0]);
+    if (channels.length) {
+      // Stay on the currently selected channel rather than always defaulting to the first
+      const current = channels.find(c => c.id === currentChannelId) || channels[0];
+      await loadVideos(current);
+    }
   } catch (e) {
     showToast(e.message, 'error');
   }
@@ -844,7 +851,14 @@ $('csvFileInput').addEventListener('change', e => {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = ev => parseAndPreviewCSV(ev.target.result);
+  reader.onload = ev => {
+    try {
+      parseAndPreviewCSV(ev.target.result);
+    } catch (err) {
+      showToast('Failed to read CSV: ' + err.message, 'error');
+    }
+  };
+  reader.onerror = () => showToast('Could not read the file. Please try again.', 'error');
   reader.readAsText(file, 'UTF-8');
 });
 
@@ -920,9 +934,14 @@ function parseAndPreviewCSV(raw) {
 
     const sn = existing.snippet || {};
     const changes = [];
-    if (csvTitle !== null && csvTitle !== (sn.title || ''))             changes.push('Title');
-    if (csvDesc  !== null && csvDesc  !== (sn.description || ''))       changes.push('Description');
-    if (csvTags  !== null && csvTags  !== (sn.tags || []).join(', '))   changes.push('Tags');
+    // Trim both sides for comparison so trailing whitespace/newlines from YouTube
+    // or from the CSV editor don't produce false "change detected" results
+    const memTitle = (sn.title       || '').trim();
+    const memDesc  = (sn.description || '').trim();
+    const memTags  = (sn.tags        || []).join(', ').trim();
+    if (csvTitle !== null && csvTitle !== memTitle)   changes.push('Title');
+    if (csvDesc  !== null && csvDesc  !== memDesc)    changes.push('Description');
+    if (csvTags  !== null && csvTags  !== memTags)    changes.push('Tags');
 
     if (!changes.length) {
       countSkip++;
@@ -959,6 +978,13 @@ function parseAndPreviewCSV(raw) {
     : 'Nothing to import.';
 
   $('btnConfirmImport').disabled = countOk === 0;
+
+  if (countOk === 0 && countErr === 0) {
+    // All rows matched exactly - no edits detected
+    showToast(`No changes found in ${allRows.length - 1} row${allRows.length > 2 ? 's' : ''}. The imported file matches your current data.`, 'warning');
+    return;
+  }
+
   $('importModal').classList.remove('hidden');
 }
 
