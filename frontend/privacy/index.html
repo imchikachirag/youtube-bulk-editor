@@ -66,14 +66,40 @@
 
 <header class="header">
   <a class="logo" href="https://chiragmehta.info/youtube-bulk-editor">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="#cc0000"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>
+    <svg width="20" height="20" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="120" height="120" rx="22" fill="#0f3460"/>
+  <rect x="16" y="46" width="88" height="60" rx="5" fill="#1a4a8a"/>
+  <rect x="16" y="22" width="88" height="28" rx="5" fill="#2471a3"/>
+  <clipPath id="pv-clip"><rect x="16" y="22" width="88" height="28" rx="5"/></clipPath>
+  <g clip-path="url(#pv-clip)">
+    <rect x="16" y="22" width="88" height="28" fill="#17202a"/>
+    <polygon points="16,22 36,22 16,50" fill="white" opacity="0.9"/>
+    <polygon points="36,22 56,22 36,50 16,50" fill="#17202a"/>
+    <polygon points="56,22 76,22 56,50 36,50" fill="white" opacity="0.9"/>
+    <polygon points="76,22 96,22 76,50 56,50" fill="#17202a"/>
+    <polygon points="96,22 110,22 110,50 96,50 76,50" fill="white" opacity="0.9"/>
+  </g>
+  <polygon points="30,56 30,96 62,76" fill="white" opacity="0.92"/>
+  <rect x="70" y="54" width="26" height="4" rx="2" fill="#5dade2" opacity="0.85"/>
+  <rect x="70" y="64" width="20" height="4" rx="2" fill="#5dade2" opacity="0.65"/>
+  <rect x="70" y="74" width="24" height="4" rx="2" fill="#5dade2" opacity="0.45"/>
+  <rect x="70" y="84" width="16" height="4" rx="2" fill="#5dade2" opacity="0.3"/>
+  <g transform="translate(104,46) rotate(42)">
+    <rect x="-4" y="-48" width="8" height="8" rx="2" fill="#bdc3c7"/>
+    <rect x="-4" y="-40" width="8" height="6" fill="#c0392b"/>
+    <rect x="-4" y="-34" width="8" height="30" rx="1.5" fill="#f5c518"/>
+    <rect x="-4" y="-34" width="2.5" height="30" rx="1" fill="#e8a000" opacity="0.45"/>
+    <polygon points="-4,-4 4,-4 5,4 -5,4" fill="#d4a050"/>
+    <polygon points="-4,4 4,4 0,14" fill="#2c1a0e"/>
+  </g>
+</svg>
     YouTube <span class="logo-accent">Bulk</span> Editor
   </a>
 </header>
 
 <div class="container">
   <h1>Privacy Policy</h1>
-  <p class="meta">Last updated: March 2026 &nbsp;·&nbsp; Effective immediately &nbsp;·&nbsp; by <a href="https://chiragmehta.info">Chirag Mehta</a></p>
+  <p class="meta">Last updated: April 2026 &nbsp;·&nbsp; Effective immediately &nbsp;·&nbsp; by <a href="https://chiragmehta.info">Chirag Mehta</a></p>
 
   <div class="privacy-highlight">
     <strong>The short version:</strong> YouTube Bulk Editor stores absolutely nothing about you. No database. No logs. No tracking. Your OAuth token lives only in your browser tab and is gone the moment you close it or click Disconnect. Your video data goes directly from your browser to YouTube  -  our server never sees it.
@@ -81,6 +107,9 @@
 
   <h2>What data we collect</h2>
   <p>None. YouTube Bulk Editor does not collect, store, transmit, or share any personal data, video data, usage data, or analytics of any kind.</p>
+
+  <h2>YouTube Terms of Service</h2>
+  <p>By using YouTube Bulk Editor, you agree to be bound by the <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener noreferrer">YouTube Terms of Service</a>. This tool accesses the YouTube Data API v3 and is subject to the <a href="https://developers.google.com/youtube/terms/api-services-terms-of-service" target="_blank" rel="noopener noreferrer">YouTube API Services Terms of Service</a> and the <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google Privacy Policy</a>.</p>
 
   <h2>How authentication works</h2>
   <p>This tool uses Google OAuth 2.0 to authenticate you with YouTube. Here is exactly what happens:</p>
@@ -120,6 +149,15 @@
 
   <h2>Changes to this policy</h2>
   <p>If this policy changes, the updated date at the top of this page will be updated. Since we collect no data, there is nothing substantive to change.</p>
+
+  <h2>Revoking access and deleting your data</h2>
+  <p>Since YouTube Bulk Editor stores no data about you, there is nothing to delete on our end. Your OAuth access token exists only in your browser's <code>sessionStorage</code> for the duration of your session and is automatically removed when you close the tab.</p>
+  <p>To revoke this tool's access to your YouTube account at any time:</p>
+  <ul>
+    <li>Click the <strong>Disconnect</strong> button inside the app. This immediately removes the token from your browser and revokes it at Google.</li>
+    <li>Or visit your <a href="https://myaccount.google.com/connections?filters=3,4&amp;hl=en" target="_blank" rel="noopener noreferrer">Google Account security settings</a> and remove YouTube Bulk Editor from the list of connected apps.</li>
+  </ul>
+  <p>Either method fully and permanently removes this tool's access to your YouTube account.</p>
 
   <h2>Contact</h2>
   <p>Questions about this privacy policy? Contact Chirag Mehta at <a href="mailto:jain.chirag+youtubebulkeditor@gmail.com">jain.chirag+youtubebulkeditor@gmail.com</a> or on Twitter at <a href="https://twitter.com/imchikachirag" target="_blank">@imchikachirag</a>.</p>
