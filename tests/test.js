@@ -109,7 +109,10 @@ const uiElements = [
   ['Editor screen',         'screenEditor'],
   ['Save All button',       'btnSaveAll'],
   ['Refresh button',        'btnRefresh'],
-  ['Export CSV button',     'btnDownload'],
+  ['Export All button',     'btnDownload'],
+  ['Export Visible button', 'btnExportVisible'],
+  ['Export dropdown arrow', 'btnExportDropdown'],
+  ['Export split group',    'exportBtnGroup'],
   ['Import CSV button',     'btnImport'],
   ['Disconnect button',     'btnSignOut'],
   ['Theme toggle',          'btnTheme'],
@@ -152,6 +155,15 @@ const importChecks = [
   ['Multiline CSV parser (char-by-char)',     editorJs?.includes("function parseCSV")],
   ['Filter resets to all after import',      editorJs?.includes("filterMode = 'changed'")],
   ['Filter resets to all on refresh',        editorJs?.includes("filterMode = 'all'")],
+  ['buildCSV helper function exists',        editorJs?.includes('function buildCSV')],
+  ['downloadCSV helper function exists',     editorJs?.includes('function downloadCSV')],
+  ['Export All uses allVideos',              editorJs?.includes('buildCSV(allVideos)')],
+  ['Export Visible uses filteredVids',       editorJs?.includes('buildCSV(filteredVids)')],
+  ['Export Visible skips when empty',        editorJs?.includes('No videos visible to export')],
+  ['Export Visible filename has -filtered',  editorJs?.includes("'-filtered'")],
+  ['Export dropdown toggle exists',          editorJs?.includes('btnExportDropdown')],
+  ['Export dropdown closes on outside click',editorJs?.includes("classList.add('hidden')")],
+  ['csvCell helper function exists',         editorJs?.includes('function csvCell')],
 ];
 importChecks.forEach(([name, ok]) => ok ? pass(name) : fail(name));
 
@@ -186,6 +198,18 @@ const regressions = [
   ['R7: Version badge is a link to changelog', indexHtml?.includes('changelog/?from=app')],
   // R8: Save All had no success/fail summary
   ['R8: Save All has outcome summary message', editorJs?.includes('saved successfully!')],
+  // R9: Import CSV - FileReader had no error handler or try/catch
+  ['R9: FileReader wrapped in try/catch',       editorJs?.includes('try {') && editorJs?.includes('reader.onerror')],
+  // R10: Import CSV - comparison used trim on CSV but not on in-memory value (false positives)
+  ['R10: Import comparison trims both sides',   editorJs?.includes('memDesc') && editorJs?.includes('.trim()')],
+  // R11: Import CSV - no changes showed empty disabled modal with no explanation
+  ['R11: Import no-changes shows clear toast',  editorJs?.includes('No changes found')],
+  // R12: Contact links used Cloudflare email obfuscation (404 on non-CF hosting)
+  ['R12: Contact links use mailto (not cdn-cgi)', !indexHtml?.includes('cdn-cgi/l/email-protection')],
+  // R13: YouTube play button icon violated YouTube branding guidelines
+  ['R13: YouTube play button icon replaced with clapperboard', !indexHtml?.includes('M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5')],
+  // R14: New clapperboard icon present
+  ['R14: New clapperboard icon (ybe-clip-) in index.html', indexHtml?.includes('ybe-clip-')],
 ];
 regressions.forEach(([name, ok]) => ok ? pass(name) : fail(name));
 
@@ -209,9 +233,9 @@ if (warnings) process.stdout.write(`  ${warnings} warnings`);
 process.stdout.write(`\n`);
 
 if (failed === 0) {
-  process.stdout.write(`✅ All tests passed — safe to deliver v${currentVersion || '?'}\n`);
+  process.stdout.write(`✅ All tests passed - safe to deliver v${currentVersion || '?'}\n`);
 } else {
-  process.stdout.write(`❌ ${failed} test${failed > 1 ? 's' : ''} failed — fix before delivery\n`);
+  process.stdout.write(`❌ ${failed} test${failed > 1 ? 's' : ''} failed - fix before delivery\n`);
   process.stdout.write(`\nFailed tests:\n`);
   failures.forEach(f => process.stdout.write(`  - ${f.name}${f.detail ? ': ' + f.detail : ''}\n`));
   process.exit(1);

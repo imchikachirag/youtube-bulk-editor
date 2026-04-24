@@ -292,8 +292,55 @@
 
   <div class="timeline">
 
-    <!-- v2.3.2 -->
+    <!-- v2.3.3 -->
     <div class="release latest">
+      <div class="release-dot"></div>
+      <div class="release-card open">
+        <div class="release-header" onclick="toggleRelease(this)">
+          <span class="release-version">v2.3.3</span>
+          <span class="release-name">YouTube Branding Compliance and Privacy Policy Update</span>
+          <span class="release-tag tag-latest">Latest</span>
+          <span class="release-date">Apr 2026</span>
+          <svg class="release-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="release-body">
+          <div class="release-summary">The YouTube-style play button icon has been replaced with a custom clapperboard icon to comply with YouTube branding guidelines. The privacy policy has been updated to include the required YouTube Terms of Service reference and data revocation instructions.</div>
+          <div class="release-section section-fixed">
+            <div class="release-section-title">Fixed</div>
+            <ul>
+              <li>App icon replaced: the red YouTube play button icon in the header, sign-in screen, and footer has been replaced with a custom clapperboard icon that does not use any YouTube brand assets. The favicon and app-logo PNG files have also been updated.</li>
+              <li>Privacy policy updated: added a YouTube Terms of Service section stating that by using this app, users agree to be bound by the YouTube Terms of Service and YouTube API Services Terms of Service.</li>
+              <li>Privacy policy updated: added a Revoking Access section explaining how to disconnect the app via the Disconnect button or via Google Account security settings at myaccount.google.com/connections.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- v2.3.2 -->
+    <div class="release feature">
+      <div class="release-dot"></div>
+      <div class="release-card">
+        <div class="release-header" onclick="toggleRelease(this)">
+          <span class="release-version">v2.3.2</span>
+          <span class="release-name">Import CSV Fix and Contact Link Fix</span>
+          <span class="release-tag tag-feature">Feature</span>
+          <span class="release-date">Apr 2026</span>
+          <svg class="release-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="release-body">
+          <div class="release-summary">Import CSV now correctly detects description changes and shows a clear message when nothing has changed. The Contact link in the footer now works correctly on all hosting providers.</div>
+          <div class="release-section section-fixed">
+            <div class="release-section-title">Fixed</div>
+            <ul>
+              <li>Import CSV: description and title comparisons now trim whitespace on both sides, fixing false "no change" results caused by YouTube descriptions with trailing newlines.</li>
+              <li>Import CSV: when no actual changes are detected, a clear amber message now appears instead of a modal with a disabled button.</li>
+              <li>Import CSV: the file reader now has a try/catch and onerror handler so parsing failures surface as readable messages.</li>
+              <li>Contact link in the footer was using Cloudflare email obfuscation which caused a 404 on non-Cloudflare hosting. Replaced with direct mailto links.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
       <div class="release-dot"></div>
       <div class="release-card open">
         <div class="release-header" onclick="toggleRelease(this)">

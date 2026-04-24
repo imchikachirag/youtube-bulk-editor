@@ -38,7 +38,7 @@ section('XSS Prevention');
   ? pass('No eval() usage')
   : fail('No eval() usage', 'eval() found in frontend code');
 
-// innerHTML uses — allowed for hardcoded status strings and template rows, not user input
+// innerHTML uses - allowed for hardcoded status strings and template rows, not user input
 // User input goes through textContent only. We verify no innerHTML uses raw user fields.
 const unsafeInner = [
   editorJs.match(/innerHTML\s*=\s*[^`'"<]*(title|description|tags|csvTitle|csvDesc|csvTags)/g),
@@ -98,12 +98,12 @@ logStatements.length === 0
   ? pass('Token not logged to console')
   : fail('Token not logged to console', `${logStatements.length} instance(s) found`);
 
-// Backend does not store token — strip comments first then check
+// Backend does not store token - strip comments first then check
 const serverNoComments = serverJs.replace(/\/\/[^\n]*/g, '').replace(/\/\*[\s\S]*?\*\//g, '');
 const backendHasStorage = /\b(db|database|redis|mongoose|sequelize|\.save\(|\.insert\(|fs\.write)\b/i.test(serverNoComments);
 !backendHasStorage
-  ? pass('Backend has no storage/database — stateless OAuth handshake only')
-  : fail('Backend has no storage/database', 'storage pattern found — verify tokens are not persisted');
+  ? pass('Backend has no storage/database - stateless OAuth handshake only')
+  : fail('Backend has no storage/database', 'storage pattern found - verify tokens are not persisted');
 
 // ── 3. Data Isolation ────────────────────────────────────────
 section('Data Isolation');
@@ -177,12 +177,17 @@ editorJs.includes('async function ytUpdate') && editorJs.includes('if (!res.ok)'
   ? pass('ytUpdate handles non-OK responses')
   : fail('ytUpdate handles non-OK responses');
 
-// saveRow wrapped in try/catch — look for try block within the function
+// saveRow wrapped in try/catch - look for try block within the function
 const saveRowIdx = editorJs.indexOf('async function saveRow');
-const saveRowChunk = editorJs.slice(saveRowIdx, saveRowIdx + 2000);
+const saveRowChunk = editorJs.slice(saveRowIdx, saveRowIdx + 3000);
 saveRowChunk.includes('try {') && saveRowChunk.includes('} catch')
   ? pass('saveRow wrapped in try/catch')
   : fail('saveRow wrapped in try/catch');
+
+// YouTube API injection: < and > rejected before sending to API
+saveRowChunk.includes('[<>]') && saveRowChunk.includes('YouTube does not allow')
+  ? pass('saveRow rejects < and > before API call (YouTube invalid description protection)')
+  : fail('saveRow rejects < and > before API call (YouTube invalid description protection)');
 
 // Quota errors produce user-friendly message
 editorJs.includes('quota') && editorJs.includes('12:30 PM IST')
@@ -230,17 +235,33 @@ serverJs.includes('IS_DEV') && serverJs.includes('NODE_ENV')
   ? pass('localhost CORS origins gated to development mode only')
   : fail('localhost CORS origins gated to development mode only');
 
-serverJs.includes("allowedOrigins.some(o => origin.startsWith(o))")
-  ? pass('CORS uses startsWith match — no wildcard')
-  : fail('CORS uses startsWith match — no wildcard');
+serverJs.includes("allowedOrigins.some(o => origin === o)")
+  ? pass('CORS uses exact origin match - no prefix or wildcard allowed')
+  : fail('CORS uses exact origin match - no prefix or wildcard allowed');
+// ── 10. YouTube Branding Compliance ──────────────────────────
+section('YouTube Branding Compliance');
+
+const ytIconPath = 'M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5';
+!indexHtml.includes(ytIconPath)
+  ? pass('No YouTube play button icon in index.html (branding compliant)')
+  : fail('No YouTube play button icon in index.html', 'YouTube branded icon still present');
+
+!indexHtml.includes('cdn-cgi/l/email-protection')
+  ? pass('No Cloudflare email obfuscation links (all contact links are direct mailto)')
+  : fail('No Cloudflare email obfuscation links', 'cdn-cgi links cause 404 on non-CF hosting');
+
+indexHtml.includes('ybe-clip-')
+  ? pass('New clapperboard icon present in index.html')
+  : fail('New clapperboard icon present in index.html', 'ybe-clip- not found');
+
 const total = passed + failed;
 process.stdout.write(`\n${'═'.repeat(60)}\n`);
 process.stdout.write(`SECURITY  ${passed}/${total} checks passed\n`);
 
 if (failed === 0) {
-  process.stdout.write(`✅ Security audit passed — no issues found\n`);
+  process.stdout.write(`✅ Security audit passed - no issues found\n`);
 } else {
-  process.stdout.write(`❌ ${failed} security issue${failed > 1 ? 's' : ''} found — review before delivery\n`);
+  process.stdout.write(`❌ ${failed} security issue${failed > 1 ? 's' : ''} found - review before delivery\n`);
   process.stdout.write(`\nFailed checks:\n`);
   failures.forEach(f => process.stdout.write(`  - ${f.name}${f.detail ? ': ' + f.detail : ''}\n`));
   process.exit(1);
@@ -252,9 +273,9 @@ process.stdout.write(`\n${'═'.repeat(60)}\n`);
 process.stdout.write(`SECURITY  ${passed}/${total2} checks passed\n`);
 
 if (failed === 0) {
-  process.stdout.write(`✅ Security audit passed — no issues found\n`);
+  process.stdout.write(`✅ Security audit passed - no issues found\n`);
 } else {
-  process.stdout.write(`❌ ${failed} security issue${failed > 1 ? 's' : ''} found — review before delivery\n`);
+  process.stdout.write(`❌ ${failed} security issue${failed > 1 ? 's' : ''} found - review before delivery\n`);
   process.stdout.write(`\nFailed checks:\n`);
   failures.forEach(f => process.stdout.write(`  - ${f.name}${f.detail ? ': ' + f.detail : ''}\n`));
   process.exit(1);
