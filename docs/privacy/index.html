@@ -99,7 +99,7 @@
 
 <div class="container">
   <h1>Privacy Policy</h1>
-  <p class="meta">Last updated: April 2026 &nbsp;·&nbsp; Effective immediately &nbsp;·&nbsp; by <a href="https://chiragmehta.info">Chirag Mehta</a></p>
+  <p class="meta">Last updated: May 2026 &nbsp;·&nbsp; Effective immediately &nbsp;·&nbsp; by <a href="https://chiragmehta.info">Chirag Mehta</a></p>
 
   <div class="privacy-highlight">
     <strong>The short version:</strong> YouTube Bulk Editor stores absolutely nothing about you. No database. No logs. No tracking. Your OAuth token lives only in your browser tab and is gone the moment you close it or click Disconnect. Your video data goes directly from your browser to YouTube  -  our server never sees it.
@@ -158,6 +158,32 @@
     <li>Or visit your <a href="https://myaccount.google.com/connections?filters=3,4&amp;hl=en" target="_blank" rel="noopener noreferrer">Google Account security settings</a> and remove YouTube Bulk Editor from the list of connected apps.</li>
   </ul>
   <p>Either method fully and permanently removes this tool's access to your YouTube account.</p>
+
+  <h2>Data Accessed</h2>
+  <p>YouTube Bulk Editor accesses the following Google user data via the YouTube Data API v3:</p>
+  <ul>
+    <li>Your YouTube channel information (channel name, thumbnail, uploads playlist ID)</li>
+    <li>Your YouTube video metadata (titles, descriptions, tags, privacy status, publish dates, view counts, like counts, comment counts, duration, category, language settings)</li>
+    <li>A short-lived OAuth 2.0 access token issued by Google to authenticate API requests on your behalf</li>
+  </ul>
+  <p>The app requests the minimum scopes necessary: <code>youtube.force-ssl</code> for reading and updating video metadata, and <code>youtube.readonly</code> for reading channel and video data.</p>
+
+  <h2>Data Usage</h2>
+  <p>The data accessed is used solely to display your video library in the editor interface and to apply the title, description, and tag edits you make back to your YouTube channel via the YouTube Data API. No data is used for any other purpose including advertising, analytics, profiling, or training machine learning models.</p>
+
+  <h2>Data Sharing</h2>
+  <p>YouTube Bulk Editor does not share any Google user data with any third parties. There are no analytics services, advertising networks, data brokers, or other external services that receive your data. The only external service the app communicates with is the YouTube Data API (googleapis.com) to read and update your video metadata on your behalf.</p>
+
+  <h2>Data Storage and Protection</h2>
+  <p>YouTube Bulk Editor stores no Google user data. The OAuth access token is held exclusively in your browser's <code>sessionStorage</code> for the duration of your active session. It is never written to any database, file, server log, or external service. Our backend server (Google Cloud Run) performs only the one-time OAuth code exchange and immediately forwards the token to your browser - it does not retain the token or any user data at any point. The complete server source code is publicly available at <a href="https://github.com/imchikachirag/youtube-bulk-editor/blob/main/backend/server.js" target="_blank" rel="noopener noreferrer">github.com/imchikachirag/youtube-bulk-editor</a> for independent verification.</p>
+
+  <h2>Data Retention and Deletion</h2>
+  <p>Since no Google user data is stored by YouTube Bulk Editor, there is no data to retain or delete on our end. The OAuth access token exists only in your browser's <code>sessionStorage</code> and is automatically removed when you close the browser tab.</p>
+  <p>To permanently remove this app's access to your Google account:</p>
+  <ul>
+    <li>Click the <strong>Disconnect</strong> button inside the app. This immediately clears the token from your browser and revokes the app's access at Google.</li>
+    <li>Or visit your <a href="https://myaccount.google.com/connections?filters=3,4&amp;hl=en" target="_blank" rel="noopener noreferrer">Google Account security settings</a> and remove YouTube Bulk Editor from the list of connected apps.</li>
+  </ul>
 
   <h2>Contact</h2>
   <p>Questions about this privacy policy? Contact Chirag Mehta at <a href="mailto:jain.chirag+youtubebulkeditor@gmail.com">jain.chirag+youtubebulkeditor@gmail.com</a> or on Twitter at <a href="https://twitter.com/imchikachirag" target="_blank">@imchikachirag</a>.</p>
